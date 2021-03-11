@@ -4,6 +4,11 @@
 
 En el repositorio **Front-End** se encuentra de manera detallada todo el código fuente relacionado única y exclusivamente al Front del proyecto. En este repositorio se encuentra todo lo relacionado con la interfaz gráfica de usuario implementada en **React** en formato **Javascript**, en el que se encuentran los directorios de los archivos que se utilizaron para la realización de todo lo relacionado con lo visual del proyecto.  
 
+## Repositorios del Proyecto
+
+* [Repositorio principal del Proyecto](https://github.com/2021-1-PROYARSW-TOROCURRAMBERO/Proyecto).
+* [Back-End del Proyecto](https://github.com/2021-1-PROYARSW-TOROCURRAMBERO/Back-End).
+
 ## Enlace al sistema de Integración Continua (Circle CI)
 
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://app.circleci.com/pipelines/github/2021-1-PROYARSW-TOROCURRAMBERO/Front-End)
