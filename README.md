@@ -15,7 +15,7 @@ En el repositorio **Front-End** se encuentra de manera detallada todo el código
 
 ## Enlace a Codacy
 	
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2d0af12fa5624aa49c8cb4d34a95c50d)](https://www.codacy.com/gh/2021-1-PROYARSW-TOROCURRAMBERO/Proyecto/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=2021-1-PROYARSW-TOROCURRAMBERO/Proyecto&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c8997ce87a494808b14605f091a43bae)](https://www.codacy.com/gh/2021-1-PROYARSW-TOROCURRAMBERO/Front-End/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=2021-1-PROYARSW-TOROCURRAMBERO/Front-End&amp;utm_campaign=Badge_Grade)
 
 ## Integrantes
 [Alejandro Toro Daza](https://github.com/Skullzo)
