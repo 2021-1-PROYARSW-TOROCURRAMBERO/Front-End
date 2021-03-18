@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import clsx from 'clsx';
+import ListaCarros from './Carros/ListaCarros'
 
 import { withStyles } from "@material-ui/core/styles";
+import ModalRegistrarAutomovil from './ModalRegistrarAutomovil';
 
 import {
     Menu,
@@ -17,17 +19,23 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
-    Box
+    Box,
+    Collapse,
 } from '@material-ui/core/';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import DriveEta from '@material-ui/icons/DriveEta';
+import Input from '@material-ui/icons/Input';
+import ListIcon from '@material-ui/icons/List';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import GroupIcon from '@material-ui/icons/Group';
+import OfrecerViaje from './OfrecerViaje';
 
 import logo from '../../logo.png';
 
@@ -41,6 +49,8 @@ class DashBoardConductor extends Component {
             mobileMoreAnchorEl: null,
             isMenuOpen: false,
             isMobileMenuOpen: false,
+            isCarsOpen: false,
+            isTravelsOpen: false,
 
             selectedIndex: false,
             vista1: false,
@@ -58,6 +68,8 @@ class DashBoardConductor extends Component {
         this.handleMobileMenuClose = this.handleMobileMenuClose.bind(this);
         this.handleMenuClose = this.handleMenuClose.bind(this);
         this.handleMobileMenuOpen = this.handleMobileMenuOpen.bind(this);
+        this.handleClickCars = this.handleClickCars.bind(this);
+        this.handleClickTravels = this.handleClickTravels.bind(this);
     }
 
     handleProfileMenuOpen(event) {
@@ -115,6 +127,13 @@ class DashBoardConductor extends Component {
         this.handleDrawerClose();
 
     };
+    handleClickCars(){
+        this.setState({ isCarsOpen : !this.state.isCarsOpen})
+    }
+
+    handleClickTravels(){
+        this.setState({ isTravelsOpen : !this.state.isTravelsOpen})
+    }
 
     handleDrawerOpen() {
         this.setState({ open: true });
@@ -126,6 +145,7 @@ class DashBoardConductor extends Component {
 
     render() {
         const { classes } = this.props;
+        
         return (
             <div className={classes.root}>
                 <CssBaseline />
@@ -236,17 +256,52 @@ class DashBoardConductor extends Component {
                     </div>
                     <Divider />
                     <List>
-                        {['vista 1', 'vista 2', 'vista 3', 'vista 4'].map((text, index) => (
-                            <ListItem
-
-                                button key={text}
-                                selected={this.state.selectedIndex === index}
-                                onClick={this.handleListItemClick.bind(this, index)}
-                            >
-                                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
+                        <Divider/>
+                        <ListItem button onClick={this.handleClickCars}>
+                            <ListItemIcon>
+                                <DriveEta />
+                            </ListItemIcon>
+                            <ListItemText primary="Mis Carros" />
+                            {this.state.isCarsOpen ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={this.state.isCarsOpen} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                {['Registrar Carro', 'Ver mis Carros'].map((text, index) => (
+                                    <ListItem
+                                        className={classes.nested}
+                                        button key={text}
+                                        selected={this.state.selectedIndex === index}
+                                        onClick={this.handleListItemClick.bind(this, index)}
+                                    >
+                                        <ListItemIcon>{index % 2 === 0 ? <Input /> : <ListIcon />}</ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Collapse>
+                        <Divider/>
+                        <ListItem button onClick={this.handleClickTravels}>
+                            <ListItemIcon>
+                                <GroupIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Mis Viajes" />
+                            {this.state.isTravelsOpen ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={this.state.isTravelsOpen} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem
+                                    className={classes.nested}
+                                    button
+                                    selected={this.state.selectedIndex === 2}
+                                    onClick={this.handleListItemClick.bind(this, 2)}
+                                >
+                                    <ListItemIcon>
+                                        <EmojiTransportationIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Ofrecer viaje"/>
+                                </ListItem>
+                            </List>
+                        </Collapse>
                     </List>
                 </Drawer>
                 <main className={classes.content}>
@@ -258,29 +313,17 @@ class DashBoardConductor extends Component {
                             {!this.state.vista1 && !this.state.vista2 && !this.state.vista3 && !this.state.vista4 &&
                                 <div>
                                     <Typography variant="h3">
-                                        BIENVENIDO CONDUCTOR
+                                        Bienvenido Conductor
                             </Typography>
                                 </div>}
                             <div>
-                                {this.state.vista1 &&
-                                    <Typography variant="h6">
-                                        Vista 1
-                                </Typography>
-                                }
+                                {this.state.vista1 ? <ModalRegistrarAutomovil/> : null}
                             </div>
                             <div>
-                                {this.state.vista2 &&
-                                    <Typography variant="h6">
-                                        Vista 2
-                                </Typography>
-                                }
+                                {this.state.vista2 ? <ListaCarros/> : null}
                             </div>
                             <div>
-                                {this.state.vista3 &&
-                                    <Typography variant="h6">
-                                        Vista 3
-                                </Typography>
-                                }
+                                {this.state.vista3 ? <OfrecerViaje/> : null}
                             </div>
                             <div>
                                 {this.state.vista4 &&
@@ -327,7 +370,7 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        backgroundColor: "#5F04B4"
+        backgroundColor: "#8A33FF"
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -380,6 +423,9 @@ const styles = theme => ({
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
+    },
+    nested: {
+        paddingLeft: theme.spacing(4),
     },
 });
 
