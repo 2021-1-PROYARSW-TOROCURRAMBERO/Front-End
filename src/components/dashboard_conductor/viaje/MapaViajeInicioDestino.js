@@ -4,25 +4,25 @@ import HPlatform, { HMap, HMapMarker } from "react-here-map";
 
 import Swal from 'sweetalert2'
 
-class MapRouting extends Component {
+class MapaViajeInicioDestino extends Component {
 
-     constructor(props) {
+    constructor(props) {
         super(props);
         this.state = {
             open: false,
             shape: [],
-            lat1: 4.665851,
-            lng1: -74.056515,
-            lat2: 4.731770,
-            lng2: -74.066109
+            lat1: 4.782503,
+            lng1: -74.042003,
+            lat2: 4.731232,
+            lng2: -74.042022
         }
     }
 
     openMarker = (e) => {
         if (e.target.b.lat === this.state.lat1) {
-            Swal.fire('Colina Campestre', 'Centro Comercial Mazuren', 'success')
+            Swal.fire('Colina Campestre', 'Mazuren', 'success')
         } else {
-            Swal.fire('Unilago', 'Cafeteria', 'success')
+            Swal.fire('Unilago', 'Prueba', 'success')
         }
     };
 
@@ -48,10 +48,10 @@ class MapRouting extends Component {
                 <HMap
                     style={{
                         height: "200px",
-                        width: this.props.width,
+                        width: "350px",
                         margin: "auto"
                     }}
-                    mapOptions={{ center: { lat: 4.6359562, lng: -74.110048 }, zoom: 10 }}
+                    mapOptions={{ center: { lat: 4.6359562, lng: -74.110048 }, zoom: 11 }}
                     useEvents // Required for events
                 // mapEvents={{ pointerdown: (e) => this.open(e) }} // event handlers
                 >
@@ -74,4 +74,5 @@ class MapRouting extends Component {
         )
     }
 }
-export default MapRouting;
+
+export default MapaViajeInicioDestino;

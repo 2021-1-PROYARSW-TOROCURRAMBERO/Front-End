@@ -26,10 +26,10 @@ function createData(nombre, carro, origen, destino, precio) {
 }
 
 const rows = [
-  createData('Ana', 'ABC123', 'Home', 'Pepe Sierra', 1000),
-  createData('Enzo', 'FDA543', 'Home', 'Fontibon', 0),
-  createData('Eric', 'KHG654', 'Home', 'Kennedy', 2000),
-  createData('Hugo', 'DFD795', 'Home', 'Universidad del Rosario', 1500),
+  createData('Ana', 'ABC123', 'Home', 'Unilago', 1000),
+  createData('Hugo', 'FDA543', 'Home', 'CC Titan', 0),
+  createData('Enzo', 'KHG654', 'Home', 'CC Santafe', 2000),
+  createData('Eric', 'DFD795', 'Home', 'CC Colina', 1500),
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -155,7 +155,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Conductores Disponibles
+          Solicitudes Activas
         </Typography>
       )}
 

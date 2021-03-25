@@ -15,9 +15,9 @@ import MapRouting from "./MapRouting";
 import InfoUsuarios from "../Generales/InfoUsuarios";
 
 const viajes = [
-    { viaje: { inicio: "Unilago", destino: "Pepe Sierra" }, conductor: { name: "Pepito Perez", email: "pepito@gmail", rating: 4 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
-    { viaje: { inicio: "Unilago", destino: "Pepe Sierra" }, conductor: { name: "Fulanito Torres", email: "fulanito@gmail", rating: 5 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
-    { viaje: { inicio: "Unilago", destino: "Pepe Sierra" }, conductor: { name: "Will Smith", email: "will@gmail", rating: 4 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
+    { viaje: { inicio: "Unilago", destino: "Colina" }, conductor: { name: "Pepito Perez", email: "pepito@gmail", rating: 4 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
+    { viaje: { inicio: "Usaquen", destino: "CC Santafe" }, conductor: { name: "Fulanito Torres", email: "fulanito@gmail", rating: 3 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
+    { viaje: { inicio: "Cc Titan", destino: "Andres DC" }, conductor: { name: "Will Smith", email: "will@gmail", rating: 1 }, dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear() },
 ]
 
 class ViajesOfrecidosConductores extends Component {
@@ -54,7 +54,7 @@ class ViajesOfrecidosConductores extends Component {
                                     
                                         <CardContent>
 
-                                            <MapRouting />
+                                            <MapRouting width="270px"/>
 
                                             <Typography gutterBottom variant="h5" component="h2">
                                                 Inicio: {viaje.viaje.inicio}

@@ -3,7 +3,9 @@ import clsx from 'clsx';
 import ListaCarros from './Carros/ListaCarros'
 
 import { withStyles } from "@material-ui/core/styles";
+import Swal from 'sweetalert2';
 import ModalRegistrarAutomovil from './ModalRegistrarAutomovil';
+import ModalSolicitudesPasajeros from './ModalSolicitudesPasajeros';
 
 import {
     Menu,
@@ -35,7 +37,9 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
 import GroupIcon from '@material-ui/icons/Group';
+import Link from '@material-ui/core/Link';
 import OfrecerViaje from './OfrecerViaje';
+import ModalViajeConductor from './viaje/ModalViajeConductor';
 
 import logo from '../../logo.png';
 
@@ -81,9 +85,36 @@ class DashBoardConductor extends Component {
         this.setState({ mobileMoreAnchorEl: null, isMobileMenuOpen: false });
     };
 
-    handleMenuClose() {
+    handleMenuClose(index) {
+        const { history } = this.props;
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+              confirmButton: 'btn btn-success',
+              cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: true
+          })
+
         this.setState({ anchorEl: null, isMenuOpen: false });
         this.handleMobileMenuClose();
+
+        if(index===2){ // cambio dashboard
+            swalWithBootstrapButtons.fire({
+                title: 'Está seguro de ser pasajero?',
+                text: "como pasajero podra tomar viajes y llegar como a su destino!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Si, Seguro!',
+                cancelButtonText: 'No, Regresar!',
+                reverseButtons: true
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  history.push('/dashboardPasajero');
+                }
+              })
+            
+        } 
     };
 
     handleMobileMenuOpen(event) {
@@ -145,7 +176,7 @@ class DashBoardConductor extends Component {
 
     render() {
         const { classes } = this.props;
-        
+
         return (
             <div className={classes.root}>
                 <CssBaseline />
@@ -161,20 +192,22 @@ class DashBoardConductor extends Component {
                             aria-label="open drawer"
                             onClick={this.handleDrawerOpen}
                             edge="start"
-                            className={clsx(classes.menuButton, {
-                                [classes.hide]: this.state.open,
-                            })}
+                            className={clsx(classes.menuButton, this.state.open && classes.hide)}
                         >
                             <MenuIcon />
                         </IconButton>
-                        <div>
-                            <img src={logo} width="40px" height="40px" margin="auto" alt="Logo" />
-                        </div>
-                        <div className={classes.menuTitle}>
-                            <Typography variant="h6" noWrap>
-                                QuickMobility
-                            </Typography>
-                        </div>
+                        
+                        <img src={logo} width="40px" height="40px" margin="auto" alt="Logo" />
+
+                        <Typography variant="h6" noWrap href="/home">
+                            <Link href="/home">
+                                <div className={classes.menuTitle}>
+                                    QUICKMOBILITY
+                                </div>
+                            </Link>
+                        </Typography>
+
+
                         <div className={classes.grow} />
                         <div className={classes.sectionDesktop}>
                             <IconButton
@@ -197,6 +230,7 @@ class DashBoardConductor extends Component {
                                 onClose={this.handleMenuClose}
                             >
                                 <MenuItem onClick={this.handleMenuClose}>Perfil</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this,2)}>Ser Pasajero</MenuItem>
                                 <MenuItem onClick={this.handleMenuClose}>Cerrar Sesion</MenuItem>
                             </Menu>
                         </div>
@@ -229,7 +263,7 @@ class DashBoardConductor extends Component {
                                     >
                                         <AccountCircle />
                                     </IconButton>
-                                    <p>Perfil</p>
+                                    <span>Perfil</span>
 
                                 </MenuItem>
                             </Menu>
@@ -237,7 +271,8 @@ class DashBoardConductor extends Component {
                     </Toolbar>
                 </AppBar>
                 <Drawer
-                    variant="permanent"
+                    variant="temporary"
+                    open={this.state.open}
                     className={clsx(classes.drawer, {
                         [classes.drawerOpen]: this.state.open,
                         [classes.drawerClose]: !this.state.open,
@@ -289,17 +324,17 @@ class DashBoardConductor extends Component {
                         </ListItem>
                         <Collapse in={this.state.isTravelsOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
+                            {['Ofrecer Viaje', 'Solcitudes'].map((text, index) => (
                                 <ListItem
                                     className={classes.nested}
-                                    button
-                                    selected={this.state.selectedIndex === 2}
-                                    onClick={this.handleListItemClick.bind(this, 2)}
+                                    button key={text}
+                                    selected={this.state.selectedIndex === index+2}
+                                    onClick={this.handleListItemClick.bind(this, index+2)}
                                 >
-                                    <ListItemIcon>
-                                        <EmojiTransportationIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Ofrecer viaje"/>
+                                    <ListItemIcon>{index % 2 === 0 ? <EmojiTransportationIcon /> : <ListIcon />}</ListItemIcon>
+                                    <ListItemText primary={text} />
                                 </ListItem>
+                            ))}
                             </List>
                         </Collapse>
                     </List>
@@ -312,9 +347,14 @@ class DashBoardConductor extends Component {
 
                             {!this.state.vista1 && !this.state.vista2 && !this.state.vista3 && !this.state.vista4 &&
                                 <div>
-                                    <Typography variant="h3">
-                                        Bienvenido Conductor
-                            </Typography>
+                                    <article>
+                                        <Typography variant="h3">
+                                            Viaje Actual:
+                                        </Typography>
+                                    </article>
+                                    <div> 
+                                        <ModalViajeConductor/>
+                                    </div>
                                 </div>}
                             <div>
                                 {this.state.vista1 ? <ModalRegistrarAutomovil/> : null}
@@ -326,11 +366,7 @@ class DashBoardConductor extends Component {
                                 {this.state.vista3 ? <OfrecerViaje/> : null}
                             </div>
                             <div>
-                                {this.state.vista4 &&
-                                    <Typography variant="h6" noWrap>
-                                        Vista 4
-                                </Typography>
-                                }
+                                {this.state.vista4 ? <ModalSolicitudesPasajeros/>:null}
                             </div>
 
                         </div>
@@ -365,26 +401,29 @@ const styles = theme => ({
         },
     },
     appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
+        transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         backgroundColor: "#8A33FF"
     },
     appBarShift: {
-        marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
+        marginLeft: drawerWidth,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
     menuButton: {
         marginRight: 36,
     },
+    menuLogo:{
+        position: "relative",
+    },
     menuTitle: {
         marginLeft: "5px",
+        color: "#FFFFFF",
     },
     hide: {
         display: 'none',
@@ -392,7 +431,6 @@ const styles = theme => ({
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
-        whiteSpace: 'nowrap',
     },
     drawerOpen: {
         width: drawerWidth,
@@ -423,6 +461,17 @@ const styles = theme => ({
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+    contentShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
     },
     nested: {
         paddingLeft: theme.spacing(4),

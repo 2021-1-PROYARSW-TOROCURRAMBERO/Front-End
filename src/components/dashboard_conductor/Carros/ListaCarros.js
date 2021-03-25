@@ -9,7 +9,7 @@ class ListaCarros extends React.Component{
         "listaDeCarros":[{
             "Marca":"Toyota",
             "Modelo":"Sahara Europea",
-            "Placa":"ZYX123",
+            "Placa":"XYZ123",
             "Color":"Gris",
             "isPicked":false
         },{
