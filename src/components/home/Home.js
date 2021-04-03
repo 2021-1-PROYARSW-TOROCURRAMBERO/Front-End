@@ -37,7 +37,7 @@ class Home extends Component {
                    </div>
                 </header>
                 <div id="slogan" className="centered">
-                    <p>La aplicación que nadie pidio, pero que todos necesitan </p>
+                    <p>La aplicación que nadie pidió, pero que todos necesitan.</p>
                 </div>
                   </div>
               </section>
@@ -45,8 +45,8 @@ class Home extends Component {
                 <div id="info" className="gridcont">
                    <Grid container spacing={3}>
                      <Grid item xs={6}>
-                        <h2 className="home"> ¿Quienes somos? </h2>
-                       <p>Somos una aplicación que te da la oportunidad de transportate de manera fácil y economica. Interactuando con miembros de la comunidad de Bogotá, donde decides si quieres ser conductor o ser pasajero.</p>
+                        <h2 className="home"> ¿Quiénes somos? </h2>
+                       <p>Somos una aplicación que te da la oportunidad de transportarte de manera fácil y económica. Interactuando con miembros de la comunidad de Bogotá, donde decides si quieres ser conductor o ser pasajero.</p>
                      </Grid>
                      <Grid item xs={6} className="cuadro">
                        <img src={road} alt="cuadro quickmobility"/>
@@ -58,17 +58,17 @@ class Home extends Component {
                   <div id="otros" className="gridcont">
                      <Grid container spacing={3}>
                        <Grid item xs>
-                          <h3 className="home"> Muevete de forma segura y confiable </h3>
+                          <h3 className="home"> Muévete de forma segura y confiable </h3>
                           <p> Tu conductor será un miembro de una universidad de la ciudad. </p>
                           <img src={route} className="valores" alt="container descripcion"/>
                        </Grid>
                        <Grid item xs>
                           <h3 className="home"> Ahorra Dinero </h3>
-                          <p> Pagaras un valor similar al del transporte público. </p>
+                          <p> Pagarás un valor similar al del transporte público. </p>
                             <img src={money} className="valores" alt="banner descripcion ahorro"/>
                        </Grid>
                        <Grid item xs>
-                          <h3 className="home"> Conectate con mas Personas</h3>
+                          <h3 className="home"> Conéctate con más Personas</h3>
                           <p> Podrás conocer a muchas personas de la comunidad universitaria de Bogotá. </p>
                           <img src={connect} className="valores" alt="banner descripcion personas"/>
                        </Grid>
