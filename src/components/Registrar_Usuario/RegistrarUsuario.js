@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import {Avatar,Button,CssBaseline,FormControl,Input,InputLabel,Paper,Typography} from '@material-ui/core/';
+import { Avatar, Button, CssBaseline, FormControl, Paper, Typography, TextField} from '@material-ui/core/';
 import LockIcon from '@material-ui/icons/LockOutlined';
 import './Registrar.css'
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class RegistrarUsuario extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={user:'', email:'', neighborhood:'', address:'', password:'', confirmPassword:''}
+    this.state = { url: 'https://quickmobility-backend.herokuapp.com/', confirmReister: true, user: '', email: '', neigborhood: '', address: '', password: '', confirmPassword: '' }
     this.handleUser = this.handleUser.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handleNeighborhood = this.handleNeighborhood.bind(this);
@@ -30,32 +31,30 @@ class RegistrarUsuario extends Component {
             <Typography variant="h4">CREA TU CUENTA</Typography>
             <form className="form registrar" >
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="User">Usuario</InputLabel>
-                <Input id="user" name="user" onChange={this.handleUser} autoComplete="user" autoFocus />
+                <TextField id="user" name="user" label="Usuario" required onChange={this.handleUser} autoComplete="user" autoFocus />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="email">Correo</InputLabel>
-                <Input id="email" name="email" onChange={this.handleEmail} autoComplete="email" autoFocus />
+                <TextField id="email" name="email" label="Correo" required onChange={this.handleEmail} autoComplete="email" autoFocus />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="User">Barrio</InputLabel>
-                <Input id="neighborhood" name="neighborhood" onChange={this.handleNeighborhood} autoComplete="neighborhood" autoFocus />
+                <TextField id="neigborhood" name="neigborhood" label="Barrio" required onChange={this.handleNeighborhood} autoComplete="neigborhood" autoFocus />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="address">Dirección</InputLabel>
-                <Input name="address" id="address" onChange={this.handleAddress} autoComplete="current-password"/>
+                <TextField name="address" id="address" required label="Dirección" onChange={this.handleAddress} autoComplete="current-password" />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Contraseña</InputLabel>
-                <Input name="password" type="password" id="password" onChange={this.handlePassword} autoComplete="current-password"/>
+                <TextField name="password" type="password" id="password" label="Contraseña" required onChange={this.handlePassword} autoComplete="current-password" />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Confimar Contraseña</InputLabel>
-                <Input name="confirmPassword" type="password" id="confirmPassword" onChange={this.handleConfirmPassword} autoComplete="current-password"/>
+                <TextField name="confirmPassword" type="password" label="Confimar Contraseña" id="confirmPassword" required onChange={this.handleConfirmPassword} autoComplete="current-password" />
               </FormControl>
-              <Button  onClick={this.handleSubmit} fullWidth variant="contained" color="primary" className="submit registrar">
-                Registrar
-              </Button>
+              {this.state.confirmReister ?
+                <Button onClick={this.handleSubmit} fullWidth variant="contained" color="primary" className="submit registrar">
+                  Registrar
+                </Button>
+                :
+                <div><CircularProgress /></div>
+              }
             </form>
           </Paper>
         </div>
@@ -63,7 +62,7 @@ class RegistrarUsuario extends Component {
     );
   }
 
-  onSubmit = () =>{
+  onSubmit = () => {
     const { history } = this.props;
     history.push('/login');
   }
@@ -80,7 +79,7 @@ class RegistrarUsuario extends Component {
   }
   handleNeighborhood(e) {
     this.setState({
-      neighborhood: e.target.value
+      neigborhood: e.target.value
     });
   }
   handleAddress(e) {
@@ -100,59 +99,55 @@ class RegistrarUsuario extends Component {
   }
   async handleSubmit(e) {
     const { history } = this.props;
+    this.setState({ confirmReister: false });
     var f = "@";
     console.log(this.state.email);
     e.preventDefault();
-    if(this.state.email === '' ||
-            this.state.user === '' ||
-            this.state.neighborhood === '' ||
-            this.state.address === '' ||
-            this.state.confirmPassword === '' ||
-            this.state.password === ''){
+    if (!this.state.email ||!this.state.user || !this.state.neigborhood || !this.state.address|| !this.state.confirmPassword || !this.state.password) {
       Swal.fire("Algún espacio esta vacio", "Por favor llene todos los campos", "error");
-    }else if(!this.state.email.includes(f)){
-      Swal.fire("El correo no es valido.", "Por favor ingrese un correo valido.", "error");
+    } else if (!this.state.email.includes(f)) {
+      Swal.fire("El correo no corresponde con uno real.", "Por favor ingrese un correo valido.", "error");
       return;
-    }else if(this.state.password !== this.state.confirmPassword){
+    } else if (this.state.password !== this.state.confirmPassword) {
       Swal.fire("Las contraseñas ingresadas no coinciden.", "Por favor ingrese de nuevo las contraseñas.", "error");
       return;
-    }else{
-      let res = await axios.post('https://quickmobility-backend.herokuapp.com/auth/addUser', {
-                        username : this.state.user,
-                        nombreCompleto : this.state.user,
-                        email :  this.state.email,
-                        barrio : this.state.neighborhood,
-                        password : this.state.password,
-                        direccionResidencia : this.state.address,
-                        numero : '',
-                        carros : [],
-                        viajesConductor : [],
-                        viajesPasajero : []
-                      },
-                      )
-                      .then(function (response) {
-                        console.log(response.status);
-                        console.log(response.data);
-                          if(response.status===200){
-                            Swal.fire(
-                                'Cuenta creada satisfactoriamente!',
-                                'Sera redireccionado a la pagina de inicio de sesion',
-                                'success'
-                            )
-                            
-                            history.push('/login');
-                          }else{
-                            Swal.fire("Signup failed!", "try again later", "error");
-                          }
-                        
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                        console.log(res)
-                      });
-      
+    } else {
+      await axios.post(this.state.url+'auth/addUser', {
+        username: this.state.user,
+        nombreCompleto: this.state.user,
+        email: this.state.email,
+        barrio: this.state.neigborhood,
+        password: this.state.password,
+        direccionResidencia: this.state.address,
+        numero: '',
+        carros: [],
+        viajesConductor: [],
+        viajesPasajero: []
+      },
+      )
+        .then(async function (response) {
+          console.log(response.status);
+          console.log(response.data);
+          if (response.status === 200) {
+            await Swal.fire(
+              'Cuenta creada satisfactoriamente!',
+              'Sera redireccionado a la pagina de inicio de sesion',
+              'success'
+            )
+
+            history.push('/login');
+          } else {
+            Swal.fire("Signup failed!", "try again later", "error");
+          }
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
       return;
     }
+    this.setState({ confirmReister: true });
   }
 }
 export default RegistrarUsuario;

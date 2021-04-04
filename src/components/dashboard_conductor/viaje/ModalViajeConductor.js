@@ -44,7 +44,7 @@ class ModalViajeConductor extends Component {
             dueDate: new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear(),
             pasajeros:
                 [
-                    { name: "Pepito Perez", email: "avasquez@gmail", rating: 4 },
+                    { name: "Pepito Perez", email: "pepitoperez@gmail", rating: 4 },
                     { name: "pasajero prueba", email: "prueba@gmail", rating: 3 },
                 ]
 

@@ -36,11 +36,13 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
 import logo from '../../logo.png';
-import Solicitudes from './Solicitudes';
-import ViajesOfrecidosConductores from "../dashboard_pasajero/ViajesOfrecidosConductores";
-import ModalViajePasajero from './viaje/ModalViajePasajero';
+import Requests from './Requests';
+import TripOfferedDriver from "./TripOfferedDriver";
+import PassengerTripModal from './trip/PassengerTripModal';
 
-import InfoPerfil from "../Generales/infoPerfil";
+import ProfileInfo from "../General/ProfileInfo";
+
+import axios from 'axios';
 
 class DashBoardPasajero extends Component {
 
@@ -56,12 +58,13 @@ class DashBoardPasajero extends Component {
             isViajesOpen: false,
 
             selectedIndex: false,
-            vista1: false,
-            vista2: false,
-            vista3: false,
-            vista4: false,
+            view1: false,
+            view2: false,
+            view3: false,
+            view4: false,
             open: false,
-            verPerfil: false
+            viewProfile: false,
+            userInfo:""
         }
 
         this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
@@ -77,20 +80,53 @@ class DashBoardPasajero extends Component {
     }
 
     async componentDidMount() {
-    
+
         // verificar usuario de localestorage
         // si no esta es que no se a loegueado redireccionarlo a login
         if (!JSON.parse(localStorage.getItem('user'))) {
-          await Swal.fire(
-            'No está autentificado',
-            'Por favor inicie sesion para usar esta funcionalidad',
-            'error'
-          )
-          // eliminar localStorage
-          await localStorage.clear();
-          // redireccionar a login
-          window.location.replace("/login")
+            await Swal.fire(
+                'No está autentificado',
+                'Por favor inicie sesion para usar esta funcionalidad',
+                'error'
+            )
+            // eliminar localStorage
+            await localStorage.clear();
+            // redireccionar a login
+            window.location.replace("/login")
         }
+
+        // sacar info usuario localestorage
+        var userLocalestorage = await JSON.parse(localStorage.getItem('user'));
+        this.setState({ userInfo: userLocalestorage })
+        // sacar usuario si es valido, si no redirigirlo al login
+        await axios.get(`https://quickmobility-backend.herokuapp.com/auth/loggedUser/`+userLocalestorage.username,
+            {
+                headers: {
+                    Authorization: userLocalestorage.token //the token is a variable which holds the token
+                }
+            }
+        )
+            .then(res => {
+                const user = res.data;
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Bienvenido '+user.nombreCompleto,
+                    showConfirmButton: false,
+                    timer: 1400
+                  });
+            })
+            .catch(async function () {
+                // aqui entra cuando el token es erroneo, toca pedirle que vuelva a loguearse
+                await Swal.fire(
+                    'Sesion Finalizada',
+                    'Vuelva a loguearse',
+                    'error'
+                )
+                //clear local estorage
+                localStorage.clear();
+                // redireccionar a login
+                window.location.replace("/login")
+            });
     }
 
     handleProfileMenuOpen(event) {
@@ -107,25 +143,25 @@ class DashBoardPasajero extends Component {
 
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
-              confirmButton: 'btn btn-success',
-              cancelButton: 'btn btn-danger'
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
             },
             buttonsStyling: true
-          })
+        })
 
         this.setState({ anchorEl: null, isMenuOpen: false });
         this.handleMobileMenuClose();
 
-        if(index===1){ //modal perfil usuario
-            if(this.state.verPerfil){
-                await this.setState({verPerfil : false});
-                this.setState({verPerfil : true});
-            }else{
-                this.setState({verPerfil : true});
+        if (index === 1) { //modal perfil usuario
+            if (this.state.viewProfile) {
+                await this.setState({ viewProfile: false });
+                this.setState({ viewProfile: true });
+            } else {
+                this.setState({ viewProfile: true });
             }
         }
 
-        if(index===2){ // cambio dashboard
+        if (index === 2) { // cambio dashboard
             swalWithBootstrapButtons.fire({
                 title: 'Está seguro de ser conductor?',
                 text: "como conductor podra ofrecer viajes o registrar su vehiculo!",
@@ -134,17 +170,17 @@ class DashBoardPasajero extends Component {
                 confirmButtonText: 'Si, Seguro!',
                 cancelButtonText: 'No, Regresar!',
                 reverseButtons: true
-              }).then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
-                  history.push('/dashboardConductor');
+                    history.push('/driverDashboard');
                 }
-              })
+            })
         }
 
         if (index === 3) {
             swalWithBootstrapButtons.fire({
                 title: 'Está seguro de cerrar sesion?',
-                text: "Sera redirigido a la pagina principal",
+                text: "Sera redirigido a la Pagina Principal",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
@@ -157,7 +193,7 @@ class DashBoardPasajero extends Component {
                     history.push('/home');
                 }
             })
-        } 
+        }
     };
 
     handleMobileMenuOpen(event) {
@@ -168,34 +204,34 @@ class DashBoardPasajero extends Component {
         this.setState({ selectedIndex: index })
         if (index === 0) {
             this.setState({
-                vista1: !this.state.vista1,
-                vista2: false,
-                vista3: false,
-                vista4: false,
+                view1: !this.state.view1,
+                view2: false,
+                view3: false,
+                view4: false,
             });
         }
         else if (index === 1) {
             this.setState({
-                vista2: !this.state.vista2,
-                vista1: false,
-                vista3: false,
-                vista4: false,
+                view2: !this.state.view2,
+                view1: false,
+                view3: false,
+                view4: false,
             });
         }
         else if (index === 2) {
             this.setState({
-                vista3: !this.state.vista3,
-                vista1: false,
-                vista2: false,
-                vista4: false,
+                view3: !this.state.view3,
+                view1: false,
+                view2: false,
+                view4: false,
             });
         }
         else if (index === 3) {
             this.setState({
-                vista4: !this.state.vista4,
-                vista1: false,
-                vista2: false,
-                vista3: false,
+                view4: !this.state.view4,
+                view1: false,
+                view2: false,
+                view3: false,
             });
         }
         this.handleDrawerClose();
@@ -221,10 +257,10 @@ class DashBoardPasajero extends Component {
 
     render() {
         const { classes } = this.props;
-        document.body.classList.add('dashBoardConductor');
+        document.body.classList.add('driverDashboard');
         return (
             <div className={classes.root}>
-                
+
                 <CssBaseline />
                 <AppBar
                     position="fixed"
@@ -247,7 +283,7 @@ class DashBoardPasajero extends Component {
                         <Typography variant="h6" noWrap href="/home">
                             <Link href="/home">
                                 <div className={classes.menuTitle}>
-                                    QuickMobility
+                                    QUICKMOBILITY
                                 </div>
                             </Link>
                         </Typography>
@@ -272,10 +308,10 @@ class DashBoardPasajero extends Component {
                                 open={this.state.isMenuOpen}
                                 onClose={this.handleMenuClose}
                             >
-                                <MenuItem onClick={this.handleMenuClose.bind(this,1)}>Perfil</MenuItem>
-                                {this.state.verPerfil ? <InfoPerfil user={{name:"Pepito",email:"pepito@hotmail.com",rating:2}} />: null}
-                                <MenuItem onClick={this.handleMenuClose.bind(this,2)}>Ser Conductor</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose.bind(this,3)}>Cerrar Sesion</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
+                                {this.state.viewProfile ? <ProfileInfo user={{ name: "Pepito", email: "pepito@hotmail.com", rating: 2 }} /> : null}
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Conductor</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
                             </Menu>
                         </div>
                         <div className={classes.sectionMobile}>
@@ -390,21 +426,21 @@ class DashBoardPasajero extends Component {
                     <div className={classes.toolbar} />
                     <Box>
                         <div>
-                            {!this.state.vista1 && !this.state.vista2 && !this.state.vista3 && !this.state.vista4 &&
+                            {!this.state.view1 && !this.state.view2 && !this.state.view3 && !this.state.view4 &&
                                 <div>
                                     <Typography variant="h3">
                                         Viajes Disponibles:
                                     </Typography>
-                                    <ViajesOfrecidosConductores />
+                                    <TripOfferedDriver />
                                 </div>}
                             <div>
-                                {this.state.vista1 &&
-                                    <Solicitudes />
+                                {this.state.view1 &&
+                                    <Requests />
                                 }
 
                             </div>
                             <div>
-                                {this.state.vista2 &&
+                                {this.state.view2 &&
                                     <div>
                                         <div>
                                             <Typography variant="h3">
@@ -412,19 +448,19 @@ class DashBoardPasajero extends Component {
                                             </Typography>
                                         </div>
                                         <div>
-                                            <ModalViajePasajero />
+                                            <PassengerTripModal />
                                         </div>
                                     </div>}
                             </div>
                             <div>
-                                {this.state.vista3 &&
+                                {this.state.view3 &&
                                     <Typography variant="h6">
                                         Vista 3
                                 </Typography>
                                 }
                             </div>
                             <div>
-                                {this.state.vista4 &&
+                                {this.state.view4 &&
                                     <Typography variant="h6" noWrap>
                                         Vista 4
                                 </Typography>
@@ -451,7 +487,7 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        backgroundColor: "#8A33FF"
+        backgroundColor: "#000000"
     },
     appBarShift: {
         width: `calc(100% - ${drawerWidth}px)`,

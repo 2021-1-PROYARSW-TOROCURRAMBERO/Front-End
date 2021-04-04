@@ -26,10 +26,10 @@ function createData(nombre, carro, origen, destino, precio) {
 }
 
 const rows = [
-  createData('Ana', 'ABC123', 'Home', 'Unilago', 1000),
-  createData('Hugo', 'FDA543', 'Home', 'CC Titan', 0),
-  createData('Enzo', 'KHG654', 'Home', 'CC Santafe', 2000),
-  createData('Eric', 'DFD795', 'Home', 'CC Colina', 1500),
+  createData('Carlos', 'ABC123', 'Home', 'ECI', 1000),
+  createData('Olando', 'FDA543', 'Home', 'ECI', 0),
+  createData('Andres', 'KHG654', 'Home', 'ECI', 2000),
+  createData('Eduardo', 'DFD795', 'Home', 'ECI', 1500),
 ];
 
 function descendingComparator(a, b, orderBy) {

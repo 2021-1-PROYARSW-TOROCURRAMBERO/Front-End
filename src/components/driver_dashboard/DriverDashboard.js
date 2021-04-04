@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import clsx from 'clsx';
+import CarListModal from './Cars/CarListModal'
 
 import { withStyles } from "@material-ui/core/styles";
-
 import Swal from 'sweetalert2';
+import RegisterCarModal from './RegisterCarModal';
+import PassangerRequestModal from './PassangerRequestModal';
 
 import {
     Menu,
@@ -21,28 +23,30 @@ import {
     ListItemText,
     Box,
     Collapse,
-    Link,
 } from '@material-ui/core/';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import MenuIcon from '@material-ui/icons/Menu';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import TelegramIcon from '@material-ui/icons/Telegram';
-
+import DriveEta from '@material-ui/icons/DriveEta';
+import Input from '@material-ui/icons/Input';
+import ListIcon from '@material-ui/icons/List';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
 import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import GroupIcon from '@material-ui/icons/Group';
+import Link from '@material-ui/core/Link';
+import OfferTrip from './OfferTrip';
+import DriverTripModal from './trip/DriverTripModal';
+import ProfileInfo from "../General/ProfileInfo";
+
 import logo from '../../logo.png';
-import Solicitudes from './Solicitudes';
-import ViajesOfrecidosConductores from "../dashboard_pasajero/ViajesOfrecidosConductores";
-import ModalViajePasajero from './viaje/ModalViajePasajero';
 
-import InfoPerfil from "../Generales/infoPerfil";
+import axios from 'axios';
 
-class DashBoardPasajero extends Component {
+class DriverDashboard extends Component {
 
     constructor(props) {
         super(props);
@@ -52,16 +56,17 @@ class DashBoardPasajero extends Component {
             mobileMoreAnchorEl: null,
             isMenuOpen: false,
             isMobileMenuOpen: false,
-            isRequestsOpen: false,
-            isViajesOpen: false,
+            isCarsOpen: false,
+            isTravelsOpen: false,
 
             selectedIndex: false,
-            vista1: false,
-            vista2: false,
-            vista3: false,
-            vista4: false,
+            page1: false,
+            page2: false,
+            page3: false,
+            page4: false,
             open: false,
-            verPerfil: false
+            viewProfile: false,
+            userInfo:""
         }
 
         this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
@@ -72,25 +77,57 @@ class DashBoardPasajero extends Component {
         this.handleMobileMenuClose = this.handleMobileMenuClose.bind(this);
         this.handleMenuClose = this.handleMenuClose.bind(this);
         this.handleMobileMenuOpen = this.handleMobileMenuOpen.bind(this);
-        this.handleClickRequests = this.handleClickRequests.bind(this);
-        this.handleClickRequestsViajes = this.handleClickRequestsViajes.bind(this);
+        this.handleClickCars = this.handleClickCars.bind(this);
+        this.handleClickTravels = this.handleClickTravels.bind(this);
     }
 
     async componentDidMount() {
-    
+
         // verificar usuario de localestorage
         // si no esta es que no se a loegueado redireccionarlo a login
         if (!JSON.parse(localStorage.getItem('user'))) {
-          await Swal.fire(
-            'No está autentificado',
-            'Por favor inicie sesion para usar esta funcionalidad',
-            'error'
-          )
-          // eliminar localStorage
-          await localStorage.clear();
-          // redireccionar a login
-          window.location.replace("/login")
+            await Swal.fire(
+                'No está autentificado',
+                'Por favor inicie sesion para usar esta funcionalidad',
+                'error'
+            )
+            // eliminar localStorage
+            await localStorage.clear();
+            // redireccionar a login
+            window.location.replace("/login")
         }
+        // sacar info usuario localestorage
+        var userLocalestorage = await JSON.parse(localStorage.getItem('user'));
+        this.setState({ userInfo: userLocalestorage })
+        // sacar usuario si es valido, si no redirigirlo al login
+        await axios.get(`https://quickmobility-backend.herokuapp.com/auth/loggedUser/` + userLocalestorage.username,
+            {
+                headers: {
+                    Authorization: userLocalestorage.token //the token is a variable which holds the token
+                }
+            }
+        )
+            .then(res => {
+                const user = res.data;
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Bienvenido ' + user.nombreCompleto,
+                    showConfirmButton: false,
+                    timer: 1400
+                });
+            })
+            .catch(async function () {
+                // aqui entra cuando el token es erroneo, toca pedirle que vuelva a loguearse
+                await Swal.fire(
+                    'Sesion Finalizada',
+                    'Vuelva a loguearse',
+                    'error'
+                )
+                //clear local estorage
+                localStorage.clear();
+                // redireccionar a login
+                window.location.replace("/login")
+            });
     }
 
     handleProfileMenuOpen(event) {
@@ -107,44 +144,45 @@ class DashBoardPasajero extends Component {
 
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
-              confirmButton: 'btn btn-success',
-              cancelButton: 'btn btn-danger'
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
             },
             buttonsStyling: true
-          })
+        })
 
         this.setState({ anchorEl: null, isMenuOpen: false });
         this.handleMobileMenuClose();
 
-        if(index===1){ //modal perfil usuario
-            if(this.state.verPerfil){
-                await this.setState({verPerfil : false});
-                this.setState({verPerfil : true});
-            }else{
-                this.setState({verPerfil : true});
+        if (index === 1) { //modal perfil usuario
+            if (this.state.viewProfile) {
+                await this.setState({ viewProfile: false });
+                this.setState({ viewProfile: true });
+            } else {
+                this.setState({ viewProfile: true });
             }
         }
 
-        if(index===2){ // cambio dashboard
+        if (index === 2) { // cambio dashboard
             swalWithBootstrapButtons.fire({
-                title: 'Está seguro de ser conductor?',
-                text: "como conductor podra ofrecer viajes o registrar su vehiculo!",
+                title: 'Está seguro de ser pasajero?',
+                text: "como pasajero podra tomar viajes y llegar como a su destino!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
                 cancelButtonText: 'No, Regresar!',
                 reverseButtons: true
-              }).then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
-                  history.push('/dashboardConductor');
+                    history.push('/passengerDashboard');
                 }
-              })
+            })
+
         }
 
         if (index === 3) {
             swalWithBootstrapButtons.fire({
                 title: 'Está seguro de cerrar sesion?',
-                text: "Sera redirigido a la pagina principal",
+                text: "Sera redirigido a la Pagina Principal",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
@@ -157,7 +195,7 @@ class DashBoardPasajero extends Component {
                     history.push('/home');
                 }
             })
-        } 
+        }
     };
 
     handleMobileMenuOpen(event) {
@@ -168,47 +206,45 @@ class DashBoardPasajero extends Component {
         this.setState({ selectedIndex: index })
         if (index === 0) {
             this.setState({
-                vista1: !this.state.vista1,
-                vista2: false,
-                vista3: false,
-                vista4: false,
+                page1: !this.state.page1,
+                page2: false,
+                page3: false,
+                page4: false,
             });
         }
         else if (index === 1) {
             this.setState({
-                vista2: !this.state.vista2,
-                vista1: false,
-                vista3: false,
-                vista4: false,
+                page2: !this.state.page2,
+                page1: false,
+                page3: false,
+                page4: false,
             });
         }
         else if (index === 2) {
             this.setState({
-                vista3: !this.state.vista3,
-                vista1: false,
-                vista2: false,
-                vista4: false,
+                page3: !this.state.page3,
+                page1: false,
+                page2: false,
+                page4: false,
             });
         }
         else if (index === 3) {
             this.setState({
-                vista4: !this.state.vista4,
-                vista1: false,
-                vista2: false,
-                vista3: false,
+                page4: !this.state.page4,
+                page1: false,
+                page2: false,
+                page3: false,
             });
         }
         this.handleDrawerClose();
 
     };
-
-    handleClickRequests = () => {
-
-        this.setState({ isRequestsOpen: !this.state.isRequestsOpen });
+    handleClickCars() {
+        this.setState({ isCarsOpen: !this.state.isCarsOpen })
     }
 
-    handleClickRequestsViajes() {
-        this.setState({ isViajesOpen: !this.state.isViajesOpen })
+    handleClickTravels() {
+        this.setState({ isTravelsOpen: !this.state.isTravelsOpen })
     }
 
     handleDrawerOpen() {
@@ -221,10 +257,10 @@ class DashBoardPasajero extends Component {
 
     render() {
         const { classes } = this.props;
-        document.body.classList.add('dashBoardConductor');
+
         return (
+            <Box m="auto">
             <div className={classes.root}>
-                
                 <CssBaseline />
                 <AppBar
                     position="fixed"
@@ -242,15 +278,18 @@ class DashBoardPasajero extends Component {
                         >
                             <MenuIcon />
                         </IconButton>
+
                         <img src={logo} width="40px" height="40px" margin="auto" alt="Logo" />
 
                         <Typography variant="h6" noWrap href="/home">
                             <Link href="/home">
                                 <div className={classes.menuTitle}>
-                                    QuickMobility
+                                    QUICKMOBILITY
                                 </div>
                             </Link>
                         </Typography>
+
+
                         <div className={classes.grow} />
                         <div className={classes.sectionDesktop}>
                             <IconButton
@@ -272,10 +311,10 @@ class DashBoardPasajero extends Component {
                                 open={this.state.isMenuOpen}
                                 onClose={this.handleMenuClose}
                             >
-                                <MenuItem onClick={this.handleMenuClose.bind(this,1)}>Perfil</MenuItem>
-                                {this.state.verPerfil ? <InfoPerfil user={{name:"Pepito",email:"pepito@hotmail.com",rating:2}} />: null}
-                                <MenuItem onClick={this.handleMenuClose.bind(this,2)}>Ser Conductor</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose.bind(this,3)}>Cerrar Sesion</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
+                                {this.state.viewProfile ? <ProfileInfo /> : null}
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Pasajero</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
                             </Menu>
                         </div>
                         <div className={classes.sectionMobile}>
@@ -335,105 +374,91 @@ class DashBoardPasajero extends Component {
                     </div>
                     <Divider />
                     <List>
-                        <ListItem button onClick={this.handleClickRequests}>
+                        <Divider />
+                        <ListItem button onClick={this.handleClickCars}>
                             <ListItemIcon>
-                                <TelegramIcon />
+                                <DriveEta />
                             </ListItemIcon>
-                            <ListItemText primary="Mis Solicitudes" />
-                            {this.state.isRequestsOpen ? <ExpandLess /> : <ExpandMore />}
+                            <ListItemText primary="Mis Carros" />
+                            {this.state.isCarsOpen ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
-                        <Collapse in={this.state.isRequestsOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={this.state.isCarsOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItem
-                                    className={classes.nested}
-                                    button
-                                    selected={this.state.selectedIndex === 0}
-                                    onClick={this.handleListItemClick.bind(this, 0)}
-                                >
-                                    <ListItemIcon>
-                                        <CheckCircleOutlineIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Activas" />
-                                </ListItem>
+                                {['Registrar Carro', 'Ver mis Carros'].map((text, index) => (
+                                    <ListItem
+                                        className={classes.nested}
+                                        button key={text}
+                                        selected={this.state.selectedIndex === index}
+                                        onClick={this.handleListItemClick.bind(this, index)}
+                                    >
+                                        <ListItemIcon>{index % 2 === 0 ? <Input /> : <ListIcon />}</ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+                                ))}
                             </List>
                         </Collapse>
-
-                        <ListItem button onClick={this.handleClickRequestsViajes}>
+                        <Divider />
+                        <ListItem button onClick={this.handleClickTravels}>
                             <ListItemIcon>
-                                <EmojiTransportationIcon />
+                                <GroupIcon />
                             </ListItemIcon>
                             <ListItemText primary="Mis Viajes" />
-                            {this.state.isViajesOpen ? <ExpandLess /> : <ExpandMore />}
+                            {this.state.isTravelsOpen ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
-                        <Collapse in={this.state.isViajesOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={this.state.isTravelsOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItem
-                                    className={classes.nested}
-                                    button
-                                    selected={this.state.selectedIndex === 1}
-                                    onClick={this.handleListItemClick.bind(this, 1)}
-                                >
-                                    <ListItemIcon>
-                                        <CheckCircleOutlineIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Actual" />
-                                </ListItem>
+                                {['Ofrecer Viaje', 'Solicitudes'].map((text, index) => (
+                                    <ListItem
+                                        className={classes.nested}
+                                        button key={text}
+                                        selected={this.state.selectedIndex === index + 2}
+                                        onClick={this.handleListItemClick.bind(this, index + 2)}
+                                    >
+                                        <ListItemIcon>{index % 2 === 0 ? <EmojiTransportationIcon /> : <ListIcon />}</ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+                                ))}
                             </List>
                         </Collapse>
                     </List>
                 </Drawer>
-                <main
-                    className={clsx(classes.content, {
-                        [classes.contentShift]: this.state.open,
-                    })}
-                >
+                <Box m="auto">
+                <main className={classes.content}>
                     <div className={classes.toolbar} />
                     <Box>
+
                         <div>
-                            {!this.state.vista1 && !this.state.vista2 && !this.state.vista3 && !this.state.vista4 &&
+
+                            {!this.state.page1 && !this.state.page2 && !this.state.page3 && !this.state.page4 &&
                                 <div>
-                                    <Typography variant="h3">
-                                        Viajes Disponibles:
-                                    </Typography>
-                                    <ViajesOfrecidosConductores />
+                                    <article>
+                                        <Typography variant="h3">
+                                            Viaje Actual:
+                                        </Typography>
+                                    </article>
+                                    <div>
+                                        <DriverTripModal />
+                                    </div>
                                 </div>}
                             <div>
-                                {this.state.vista1 &&
-                                    <Solicitudes />
-                                }
+                                {this.state.page1 ? <RegisterCarModal /> : null}
+                            </div>
+                            <div>
+                                {this.state.page2 ? <CarListModal /> : null}
+                            </div>
+                            <div>
+                                {this.state.page3 ? <OfferTrip /> : null}
+                            </div>
+                            <div>
+                                {this.state.page4 ? <PassangerRequestModal /> : null}
+                            </div>
 
-                            </div>
-                            <div>
-                                {this.state.vista2 &&
-                                    <div>
-                                        <div>
-                                            <Typography variant="h3">
-                                                Viaje Actual:
-                                            </Typography>
-                                        </div>
-                                        <div>
-                                            <ModalViajePasajero />
-                                        </div>
-                                    </div>}
-                            </div>
-                            <div>
-                                {this.state.vista3 &&
-                                    <Typography variant="h6">
-                                        Vista 3
-                                </Typography>
-                                }
-                            </div>
-                            <div>
-                                {this.state.vista4 &&
-                                    <Typography variant="h6" noWrap>
-                                        Vista 4
-                                </Typography>
-                                }
-                            </div>
                         </div>
                     </Box>
                 </main>
+                </Box>
             </div>
+            </Box>
 
 
         )
@@ -445,6 +470,21 @@ const drawerWidth = 240;
 const styles = theme => ({
     root: {
         display: 'flex',
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    sectionDesktop: {
+        display: 'none',
+        [theme.breakpoints.up('md')]: {
+            display: 'flex',
+        },
+    },
+    sectionMobile: {
+        display: 'flex',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
     },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
@@ -462,7 +502,14 @@ const styles = theme => ({
         }),
     },
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginRight: 36,
+    },
+    menuLogo: {
+        position: "relative",
+    },
+    menuTitle: {
+        marginLeft: "5px",
+        color: "#FFFFFF",
     },
     hide: {
         display: 'none',
@@ -470,36 +517,6 @@ const styles = theme => ({
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    drawerHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
-        justifyContent: 'flex-end',
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    sectionDesktop: {
-        display: 'none',
-        [theme.breakpoints.up('md')]: {
-            display: 'flex',
-        },
-    },
-    sectionMobile: {
-        display: 'flex',
-        [theme.breakpoints.up('md')]: {
-            display: 'none',
-        },
-    },
-    menuTitle: {
-        marginLeft: "5px",
-        color: "#FFFFFF"
     },
     drawerOpen: {
         width: drawerWidth,
@@ -548,4 +565,4 @@ const styles = theme => ({
 });
 
 
-export default withStyles(styles, { withTheme: true })(DashBoardPasajero);
+export default withStyles(styles, { withTheme: true })(DriverDashboard);

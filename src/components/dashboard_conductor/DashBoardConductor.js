@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import clsx from 'clsx';
-import ListaCarros from './Carros/ListaCarros'
+import ModalListaCarros from './Carros/ModalListaCarros'
 
 import { withStyles } from "@material-ui/core/styles";
 import Swal from 'sweetalert2';
@@ -40,6 +40,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import Link from '@material-ui/core/Link';
 import OfrecerViaje from './OfrecerViaje';
 import ModalViajeConductor from './viaje/ModalViajeConductor';
+import InfoPerfil from "../Generales/infoPerfil";
 
 import logo from '../../logo.png';
 
@@ -61,7 +62,8 @@ class DashBoardConductor extends Component {
             vista2: false,
             vista3: false,
             vista4: false,
-            open: false
+            open: false,
+            verPerfil: false
         }
 
         this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
@@ -76,6 +78,23 @@ class DashBoardConductor extends Component {
         this.handleClickTravels = this.handleClickTravels.bind(this);
     }
 
+    async componentDidMount() {
+
+        // verificar usuario de localestorage
+        // si no esta es que no se a loegueado redireccionarlo a login
+        if (!JSON.parse(localStorage.getItem('user'))) {
+            await Swal.fire(
+                'No está autentificado',
+                'Por favor inicie sesion para usar esta funcionalidad',
+                'error'
+            )
+            // eliminar localStorage
+            await localStorage.clear();
+            // redireccionar a login
+            window.location.replace("/login")
+        }
+    }
+
     handleProfileMenuOpen(event) {
         this.setState({ anchorEl: event.currentTarget, isMenuOpen: true });
         this.handleMobileMenuClose();
@@ -85,21 +104,30 @@ class DashBoardConductor extends Component {
         this.setState({ mobileMoreAnchorEl: null, isMobileMenuOpen: false });
     };
 
-    handleMenuClose(index) {
+    async handleMenuClose(index) {
         const { history } = this.props;
 
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
-              confirmButton: 'btn btn-success',
-              cancelButton: 'btn btn-danger'
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
             },
             buttonsStyling: true
-          })
+        })
 
         this.setState({ anchorEl: null, isMenuOpen: false });
         this.handleMobileMenuClose();
 
-        if(index===2){ // cambio dashboard
+        if (index === 1) { //modal perfil usuario
+            if (this.state.verPerfil) {
+                await this.setState({ verPerfil: false });
+                this.setState({ verPerfil: true });
+            } else {
+                this.setState({ verPerfil: true });
+            }
+        }
+
+        if (index === 2) { // cambio dashboard
             swalWithBootstrapButtons.fire({
                 title: 'Está seguro de ser pasajero?',
                 text: "como pasajero podra tomar viajes y llegar como a su destino!",
@@ -108,13 +136,31 @@ class DashBoardConductor extends Component {
                 confirmButtonText: 'Si, Seguro!',
                 cancelButtonText: 'No, Regresar!',
                 reverseButtons: true
-              }).then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
-                  history.push('/dashboardPasajero');
+                    history.push('/dashboardPasajero');
                 }
-              })
-            
-        } 
+            })
+
+        }
+
+        if (index === 3) {
+            swalWithBootstrapButtons.fire({
+                title: 'Está seguro de cerrar sesion?',
+                text: "Sera redirigido a la pagina principal",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Si, Seguro!',
+                cancelButtonText: 'No, Regresar!',
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // limpiar localStorage
+                    await localStorage.clear();
+                    history.push('/home');
+                }
+            })
+        }
     };
 
     handleMobileMenuOpen(event) {
@@ -158,12 +204,12 @@ class DashBoardConductor extends Component {
         this.handleDrawerClose();
 
     };
-    handleClickCars(){
-        this.setState({ isCarsOpen : !this.state.isCarsOpen})
+    handleClickCars() {
+        this.setState({ isCarsOpen: !this.state.isCarsOpen })
     }
 
-    handleClickTravels(){
-        this.setState({ isTravelsOpen : !this.state.isTravelsOpen})
+    handleClickTravels() {
+        this.setState({ isTravelsOpen: !this.state.isTravelsOpen })
     }
 
     handleDrawerOpen() {
@@ -196,13 +242,13 @@ class DashBoardConductor extends Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        
+
                         <img src={logo} width="40px" height="40px" margin="auto" alt="Logo" />
 
                         <Typography variant="h6" noWrap href="/home">
                             <Link href="/home">
                                 <div className={classes.menuTitle}>
-                                    QUICKMOBILITY
+                                    QuickMobility   
                                 </div>
                             </Link>
                         </Typography>
@@ -229,9 +275,10 @@ class DashBoardConductor extends Component {
                                 open={this.state.isMenuOpen}
                                 onClose={this.handleMenuClose}
                             >
-                                <MenuItem onClick={this.handleMenuClose}>Perfil</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose.bind(this,2)}>Ser Pasajero</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose}>Cerrar Sesion</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
+                                {this.state.verPerfil ? <InfoPerfil /> : null}
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Pasajero</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
                             </Menu>
                         </div>
                         <div className={classes.sectionMobile}>
@@ -291,7 +338,7 @@ class DashBoardConductor extends Component {
                     </div>
                     <Divider />
                     <List>
-                        <Divider/>
+                        <Divider />
                         <ListItem button onClick={this.handleClickCars}>
                             <ListItemIcon>
                                 <DriveEta />
@@ -314,7 +361,7 @@ class DashBoardConductor extends Component {
                                 ))}
                             </List>
                         </Collapse>
-                        <Divider/>
+                        <Divider />
                         <ListItem button onClick={this.handleClickTravels}>
                             <ListItemIcon>
                                 <GroupIcon />
@@ -324,17 +371,17 @@ class DashBoardConductor extends Component {
                         </ListItem>
                         <Collapse in={this.state.isTravelsOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                            {['Ofrecer Viaje', 'Solcitudes'].map((text, index) => (
-                                <ListItem
-                                    className={classes.nested}
-                                    button key={text}
-                                    selected={this.state.selectedIndex === index+2}
-                                    onClick={this.handleListItemClick.bind(this, index+2)}
-                                >
-                                    <ListItemIcon>{index % 2 === 0 ? <EmojiTransportationIcon /> : <ListIcon />}</ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItem>
-                            ))}
+                                {['Ofrecer Viaje', 'Solicitudes'].map((text, index) => (
+                                    <ListItem
+                                        className={classes.nested}
+                                        button key={text}
+                                        selected={this.state.selectedIndex === index + 2}
+                                        onClick={this.handleListItemClick.bind(this, index + 2)}
+                                    >
+                                        <ListItemIcon>{index % 2 === 0 ? <EmojiTransportationIcon /> : <ListIcon />}</ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+                                ))}
                             </List>
                         </Collapse>
                     </List>
@@ -352,21 +399,21 @@ class DashBoardConductor extends Component {
                                             Viaje Actual:
                                         </Typography>
                                     </article>
-                                    <div> 
-                                        <ModalViajeConductor/>
+                                    <div>
+                                        <ModalViajeConductor />
                                     </div>
                                 </div>}
                             <div>
-                                {this.state.vista1 ? <ModalRegistrarAutomovil/> : null}
+                                {this.state.vista1 ? <ModalRegistrarAutomovil /> : null}
                             </div>
                             <div>
-                                {this.state.vista2 ? <ListaCarros/> : null}
+                                {this.state.vista2 ? <ModalListaCarros /> : null}
                             </div>
                             <div>
-                                {this.state.vista3 ? <OfrecerViaje/> : null}
+                                {this.state.vista3 ? <OfrecerViaje /> : null}
                             </div>
                             <div>
-                                {this.state.vista4 ? <ModalSolicitudesPasajeros/>:null}
+                                {this.state.vista4 ? <ModalSolicitudesPasajeros /> : null}
                             </div>
 
                         </div>
@@ -418,7 +465,7 @@ const styles = theme => ({
     menuButton: {
         marginRight: 36,
     },
-    menuLogo:{
+    menuLogo: {
         position: "relative",
     },
     menuTitle: {
