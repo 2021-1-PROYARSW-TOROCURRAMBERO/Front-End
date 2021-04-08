@@ -96,7 +96,7 @@ class ActualizarCarro extends Component {
                 if (res.status === 200) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Carro Editado con Exito!',
+                        title: '¡Carro editado con éxito!',
                         showConfirmButton: false,
                         timer: 2000
                       });
@@ -106,7 +106,7 @@ class ActualizarCarro extends Component {
                 } else {
                   Swal.fire(
                     'Registro Fallido',
-                    'error del servidor, vuelva a registrarlo',
+                    'Error del servidor, vuelva a registrarlo',
                     'error'
                   )
                   this.setState({ open: false });
@@ -114,8 +114,8 @@ class ActualizarCarro extends Component {
             }).catch(function (error) {
                 console.log(error);
                 Swal.fire(
-                    'sesion finalizada',
-                    'error del servidor, vuelva a loguearse',
+                    'Sesión finalizada',
+                    'Error del servidor, vuelva a loguearse',
                     'error'
                 )
                 // redireccionar a login
@@ -124,7 +124,7 @@ class ActualizarCarro extends Component {
         }
         else{
             Swal.fire(
-                'Datos Erroneos',
+                'Datos Erróneos',
                 'Verifique los campos',
                 'error'
             )
