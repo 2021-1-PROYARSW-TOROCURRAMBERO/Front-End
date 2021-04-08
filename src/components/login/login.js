@@ -99,7 +99,7 @@ class Login extends React.Component {
                     if (response.status === 200) {
                         await Swal.fire(
                             'Bienvenido ',
-                            'Sera redireccionado al dashboard de ' + rol,
+                            'Será redireccionado al dashboard de ' + rol,
                             'success'
                         )
                         // guardar token e username logueado en localestorage
