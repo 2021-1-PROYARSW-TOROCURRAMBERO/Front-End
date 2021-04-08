@@ -104,9 +104,9 @@ class RegistrarUsuario extends Component {
     console.log(this.state.email);
     e.preventDefault();
     if (!this.state.email ||!this.state.user || !this.state.neigborhood || !this.state.address|| !this.state.confirmPassword || !this.state.password) {
-      Swal.fire("Algún espacio esta vacio", "Por favor llene todos los campos", "error");
+      Swal.fire("Algún espacio está vacío", "Por favor llene todos los campos", "error");
     } else if (!this.state.email.includes(f)) {
-      Swal.fire("El correo no corresponde con uno real.", "Por favor ingrese un correo valido.", "error");
+      Swal.fire("El correo no corresponde con uno real.", "Por favor ingrese un correo válido.", "error");
       return;
     } else if (this.state.password !== this.state.confirmPassword) {
       Swal.fire("Las contraseñas ingresadas no coinciden.", "Por favor ingrese de nuevo las contraseñas.", "error");
@@ -131,7 +131,7 @@ class RegistrarUsuario extends Component {
           if (response.status === 200) {
             await Swal.fire(
               'Cuenta creada satisfactoriamente!',
-              'Sera redireccionado a la pagina de inicio de sesion',
+              'Será redireccionado a la página de inicio de sesión',
               'success'
             )
 
