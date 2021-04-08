@@ -37,7 +37,7 @@ class Home extends Component {
                    </div>
                 </header>
                 <div id="slogan" className="centered">
-                    <p>La aplicación que nadie pidio, pero que todos necesitan </p>
+                    <p>La aplicación que nadie pidió, pero que todos necesitan </p>
                 </div>
                   </div>
               </section>
