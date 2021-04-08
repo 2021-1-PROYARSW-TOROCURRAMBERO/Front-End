@@ -86,7 +86,7 @@ class DashBoardPasajero extends Component {
         if (!JSON.parse(localStorage.getItem('user'))) {
             await Swal.fire(
                 'No está autentificado',
-                'Por favor inicie sesion para usar esta funcionalidad',
+                'Por favor inicie sesión para usar esta funcionalidad',
                 'error'
             )
             // eliminar localStorage
@@ -119,7 +119,7 @@ class DashBoardPasajero extends Component {
                 // aqui entra cuando el token es erroneo, toca pedirle que vuelva a loguearse
                 await Swal.fire(
                     'Sesion Finalizada',
-                    'Vuelva a loguearse',
+                    'Vuelva a Iniciar Sesión',
                     'error'
                 )
                 //clear local estorage
@@ -163,8 +163,8 @@ class DashBoardPasajero extends Component {
 
         if (index === 2) { // cambio dashboard
             swalWithBootstrapButtons.fire({
-                title: 'Está seguro de ser conductor?',
-                text: "como conductor podra ofrecer viajes o registrar su vehiculo!",
+                title: '¿Está seguro de ser conductor?',
+                text: "Como conductor podrá ofrecer viajes o registrar su vehiculo",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
@@ -179,8 +179,8 @@ class DashBoardPasajero extends Component {
 
         if (index === 3) {
             swalWithBootstrapButtons.fire({
-                title: 'Está seguro de cerrar sesion?',
-                text: "Sera redirigido a la Pagina Principal",
+                title: '¿Está seguro de cerrar sesion?',
+                text: "Será redirigido a la Página Principal",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
