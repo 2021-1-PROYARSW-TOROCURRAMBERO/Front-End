@@ -79,7 +79,7 @@ class UpdateCar extends Component {
             // sacar user token y username de localEstorage
             var userInfo = JSON.parse(localStorage.getItem('user'));
             // hacer el put
-            await axios.put(`https://quickmobility-backend.herokuapp.com/cars/update/` + userInfo.username,
+            await axios.put(`https://quickmobility-backend.herokuapp.com/quickmobility/cars/update/` + userInfo.username,
                 {
                     placa: this.state.plate,
                     marca: this.state.brand,
