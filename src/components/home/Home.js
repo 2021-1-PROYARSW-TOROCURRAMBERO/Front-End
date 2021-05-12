@@ -32,7 +32,7 @@ class Home extends Component {
                   </div>
                     <div className="header-right">
                      <a href="/login">Ingresar</a>
-                     <a href="/registrarusuario">Registro</a>
+                     <a href="/RegisterUser">Registro</a>
                      <a href="#about">Acerca de</a>
                    </div>
                 </header>
