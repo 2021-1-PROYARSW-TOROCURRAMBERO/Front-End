@@ -168,8 +168,8 @@ class DriverDashboard extends Component {
                 text: "como pasajero podra tomar viajes y llegar como a su destino!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Si, Seguro!',
-                cancelButtonText: 'No, Regresar!',
+                confirmButtonText: '¡Sí, Seguro!',
+                cancelButtonText: '¡No, Regresar!',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -181,12 +181,12 @@ class DriverDashboard extends Component {
 
         if (index === 3) {
             swalWithBootstrapButtons.fire({
-                title: 'Está seguro de cerrar sesion?',
-                text: "sera redirigido a la pagina principal",
+                title: '¿Está seguro de cerrar sesión?',
+                text: "Será redirigido a la página principal",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Si, Seguro!',
-                cancelButtonText: 'No, Regresar!',
+                confirmButtonText: '¡Sí, Seguro!',
+                cancelButtonText: '¡No, Regresar!',
                 reverseButtons: true
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -314,7 +314,7 @@ class DriverDashboard extends Component {
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
                                 {this.state.viewProfile ? <ProfileInfo /> : null}
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Pasajero</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesión</MenuItem>
                             </Menu>
                         </div>
                         <div className={classes.sectionMobile}>

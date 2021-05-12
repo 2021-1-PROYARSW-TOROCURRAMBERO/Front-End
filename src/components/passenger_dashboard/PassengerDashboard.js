@@ -164,11 +164,11 @@ class DashBoardPasajero extends Component {
         if (index === 2) { // cambio dashboard
             swalWithBootstrapButtons.fire({
                 title: '¿Está seguro de ser conductor?',
-                text: "Como conductor podrá ofrecer viajes o registrar su vehiculo",
+                text: "Como conductor podrá ofrecer viajes o registrar su vehículo",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Si, Seguro!',
-                cancelButtonText: 'No, Regresar!',
+                confirmButtonText: '¡Sí, Seguro!',
+                cancelButtonText: '¡No, Regresar!',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -179,12 +179,12 @@ class DashBoardPasajero extends Component {
 
         if (index === 3) {
             swalWithBootstrapButtons.fire({
-                title: '¿Está seguro de cerrar sesion?',
+                title: '¿Está seguro de cerrar sesión?',
                 text: "Será redirigido a la Página Principal",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Si, Seguro!',
-                cancelButtonText: 'No, Regresar!',
+                confirmButtonText: '¡Sí, Seguro!',
+                cancelButtonText: '¡No, Regresar!',
                 reverseButtons: true
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -320,7 +320,7 @@ class DashBoardPasajero extends Component {
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
                                 {this.state.viewProfile ? <ProfileInfo user={{ name: "Orlando", email: "orlando@hotmail.com", rating: 2 }} /> : null}
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Conductor</MenuItem>
-                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
+                                <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesión</MenuItem>
                             </Menu>
                         </div>
                         <div className={classes.sectionMobile}>

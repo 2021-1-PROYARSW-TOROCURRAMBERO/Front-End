@@ -123,7 +123,7 @@ class Login extends React.Component {
                 }).catch(function (error) {
                     console.log(error);
                     Swal.fire(
-                        'Campos Erroneos',
+                        'Campos Erróneos',
                         'Verifique los campos',
                         'error'
                     )
