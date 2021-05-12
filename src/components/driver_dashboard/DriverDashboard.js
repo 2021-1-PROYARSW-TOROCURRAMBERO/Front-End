@@ -182,7 +182,7 @@ class DriverDashboard extends Component {
         if (index === 3) {
             swalWithBootstrapButtons.fire({
                 title: 'Está seguro de cerrar sesion?',
-                text: "Sera redirigido a la Pagina Principal",
+                text: "sera redirigido a la pagina principal",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Si, Seguro!',
@@ -284,7 +284,7 @@ class DriverDashboard extends Component {
                         <Typography variant="h6" noWrap href="/home">
                             <Link href="/home">
                                 <div className={classes.menuTitle}>
-                                    QUICKMOBILITY
+                                    QuickMobility
                                 </div>
                             </Link>
                         </Typography>

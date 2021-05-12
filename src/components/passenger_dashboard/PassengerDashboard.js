@@ -200,6 +200,15 @@ class DashBoardPasajero extends Component {
         this.setState({ mobileMoreAnchorEl: event.currentTarget, isMobileMenuOpen: true });
     };
 
+    handleViewCurrentTrip = () => { 
+        this.setState({
+            view1: false,
+            view2: true,
+            view3: false,
+            view4: false,
+        });
+    }
+
     handleListItemClick(index) {
         this.setState({ selectedIndex: index })
         if (index === 0) {
@@ -283,7 +292,7 @@ class DashBoardPasajero extends Component {
                         <Typography variant="h6" noWrap href="/home">
                             <Link href="/home">
                                 <div className={classes.menuTitle}>
-                                    QUICKMOBILITY
+                                    QuickMobility
                                 </div>
                             </Link>
                         </Typography>
@@ -309,7 +318,7 @@ class DashBoardPasajero extends Component {
                                 onClose={this.handleMenuClose}
                             >
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 1)}>Perfil</MenuItem>
-                                {this.state.viewProfile ? <ProfileInfo user={{ name: "Pepito", email: "pepito@hotmail.com", rating: 2 }} /> : null}
+                                {this.state.viewProfile ? <ProfileInfo user={{ name: "Orlando", email: "orlando@hotmail.com", rating: 2 }} /> : null}
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 2)}>Ser Conductor</MenuItem>
                                 <MenuItem onClick={this.handleMenuClose.bind(this, 3)}>Cerrar Sesion</MenuItem>
                             </Menu>
@@ -431,7 +440,7 @@ class DashBoardPasajero extends Component {
                                     <Typography variant="h3">
                                         Viajes Disponibles:
                                     </Typography>
-                                    <TripOfferedDriver />
+                                    <TripOfferedDriver redirectCurrentTrip={this.handleViewCurrentTrip}/>
                                 </div>}
                             <div>
                                 {this.state.view1 &&
@@ -487,7 +496,7 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        backgroundColor: "#000000"
+        backgroundColor: "#8A33FF"
     },
     appBarShift: {
         width: `calc(100% - ${drawerWidth}px)`,

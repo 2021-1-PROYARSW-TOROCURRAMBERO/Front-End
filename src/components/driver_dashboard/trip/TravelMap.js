@@ -1,13 +1,24 @@
 import React, { Component } from 'react';
 
+import { Box } from '@material-ui/core'
 
-export default class MapaViajeInicioDestino extends Component {
+export default class TravelMap extends Component {
   mapRef = React.createRef();
   state = {
-    map: null
+    map: null,
+    width: "auto"
+  };
+
+  // resize box
+  updateDimensions = () => {
+    this.setState({ width: "auto" });
   };
 
   componentDidMount() {
+    // resize map automatic
+    window.addEventListener('resize', this.updateDimensions);
+    window.onresize = this.updateDimensions;
+
     const H = window.H;
     const platform = new H.service.Platform({
       apikey: "t5F4KkchItOSCKZO3wWCQIKtAoIjmaZforgZxkdGKaw"
@@ -45,7 +56,7 @@ export default class MapaViajeInicioDestino extends Component {
 
           // Create a polyline to display the route:
           let routeLine = new H.map.Polyline(linestring, {
-            style: { strokeColor: 'blue', lineWidth: 3 }
+            style: { strokeColor: 'black', lineWidth: 3 }
           });
 
           // Create a marker for the start point:
@@ -76,10 +87,12 @@ export default class MapaViajeInicioDestino extends Component {
     window.addEventListener('resize', () => map.getViewPort().resize());
     // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     // This variable is unused and is present for explanatory purposes
+    // eslint-disable-next-line
     const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
     // Create the default UI components to allow the user to interact with them
     // This variable is unused
+    // eslint-disable-next-line
     const ui = H.ui.UI.createDefault(map, defaultLayers);
 
     this.setState({ map });
@@ -88,10 +101,11 @@ export default class MapaViajeInicioDestino extends Component {
 
   componentWillUnmount() {
     this.setState({ map: null });
+    window.removeEventListener('resize', this.updateDimensions);
   }
 
 
   render() {
-    return <div ref={this.mapRef} style={{ height: "250px", width: "370px" }} />;
+    return <Box m="auto" ref={this.mapRef} style={{ height: "400px",width:this.state.width}} />;
   }
 }

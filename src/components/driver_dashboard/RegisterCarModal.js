@@ -10,6 +10,8 @@ import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Car from "./CarImage"
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -28,14 +30,14 @@ class RegisterCarModal extends Component {
         { modelo: 'Focus' },
         { modelo: 'Versa' }
       ], colores: [
-        { color: 'Blanco', id: "#AAAAAA" },
-        { color: 'Negro', id: "#000000" },
-        { color: 'Azul', id: "#0032FF" },
-        { color: 'Rojo', id: "#FF0000" },
-        { color: 'Amarillo', id: "#FFFF00" },
-        { color: 'Verde', id: "#008000" },
-        { color: 'Naranja', id: "#FF4500" },
-        { color: 'Morado', id: "#800080" }]
+        { color: 'blanco', id: "#AAAAAA" },
+        { color: 'negro', id: "#000000" },
+        { color: 'azul', id: "#0032FF" },
+        { color: 'rojo', id: "#FF0000" },
+        { color: 'amarillo', id: "#FFFF00" },
+        { color: 'verde', id: "#008000" },
+        { color: 'naranja', id: "#FF4500" },
+        { color: 'morado', id: "#800080" }]
 
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -86,7 +88,7 @@ class RegisterCarModal extends Component {
       // sacar user token y username de localEstorage
       var userInfo = JSON.parse(localStorage.getItem('user'));
       // hacer el post
-      await axios.post(`https://quickmobility-backend.herokuapp.com/quickmobility/addCarro/` + userInfo.username,
+      await axios.post(`https://quickmobility-backend.herokuapp.com/cars/add/` + userInfo.username,
         {
           placa: this.state.placa,
           marca: this.state.marca.brand,
@@ -135,8 +137,12 @@ class RegisterCarModal extends Component {
   render() {
 
     return (
-      < div >
-        <h1> Registra Tu Automovil </h1>
+      <Box m="auto">
+        <Box m="auto">
+          <Typography color='initial' variant="h2">
+            <strong>Registra Tu Automovil</strong>
+          </Typography>
+        </Box>
         <Grid>
           <Car color={this.state.color.id} />
         </Grid>
@@ -221,7 +227,7 @@ class RegisterCarModal extends Component {
         }
 
 
-      </div>)
+      </Box>)
   };
 
 

@@ -26,20 +26,20 @@ class UpdateCar extends Component {
             name: false,
             open: true,
             car: this.props.car,
-            brand: this.props.car.brand,
-            model: this.props.car.model,
+            brand: this.props.car.marca,
+            model: this.props.car.modelo,
             color: this.props.car.color,
-            plate: this.props.car.plate,
+            plate: this.props.car.placa,
             editCar: true,
             colors: [
-                { color: 'Blanco', id: "#AAAAAA" },
-                { color: 'Negro', id: "#000000" },
-                { color: 'Azul', id: "#0032FF" },
-                { color: 'Rojo', id: "#FF0000" },
-                { color: 'Amarillo', id: "#FFFF00" },
-                { color: 'Verde', id: "#008000" },
-                { color: 'Naranja', id: "#FF4500" },
-                { color: 'Morado', id: "#800080" }]
+                { color: 'blanco', id: "#AAAAAA" },
+                { color: 'negro', id: "#000000" },
+                { color: 'azul', id: "#0032FF" },
+                { color: 'rojo', id: "#FF0000" },
+                { color: 'amarillo', id: "#FFFF00" },
+                { color: 'verde', id: "#008000" },
+                { color: 'naranja', id: "#FF4500" },
+                { color: 'morado', id: "#800080" }]
         }
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -79,12 +79,12 @@ class UpdateCar extends Component {
             // sacar user token y username de localEstorage
             var userInfo = JSON.parse(localStorage.getItem('user'));
             // hacer el put
-            await axios.put(`https://quickmobility-backend.herokuapp.com/quickmobility/updateCarro/` + userInfo.username,
+            await axios.put(`https://quickmobility-backend.herokuapp.com/cars/update/` + userInfo.username,
                 {
-                    plate: this.state.plate,
-                    brand: this.state.brand,
+                    placa: this.state.plate,
+                    marca: this.state.brand,
                     color: this.state.color,
-                    model: this.state.model
+                    modelo: this.state.model
                 },
                 {
                     headers: {
@@ -155,12 +155,13 @@ class UpdateCar extends Component {
                         timeout: 500,
                     }}
                 >
+                    
                     <Fade in={this.state.open}>
                         <div className={classes.paper}>
                             <FormControl variant="outlined">
-                                <h2 id="transition-modal-brand">brand: </h2>
+                                <h2 id="transition-modal-brand">marca: </h2>
                                 <TextField id="textfield-brand" label={this.state.brand} onChange={this.handleBrand} />
-                                <h2 id="transition-modal-model">model: </h2>
+                                <h2 id="transition-modal-model">modelo: </h2>
                                 <TextField id="textfield-model" label={this.state.model} onChange={this.handlemodel} />
                                 <h2 id="transition-modal-color">Color: </h2>
                                 <FormControl variant="filled" >
@@ -172,7 +173,7 @@ class UpdateCar extends Component {
                                         {this.state.colors.map((option) => <MenuItem key={option.color} value={option.color}>{option.color}</MenuItem>)}
                                     </Select>
                                 </FormControl>
-                                <h2 id="transition-modal-plate">plate: </h2>
+                                <h2 id="transition-modal-plate">placa: </h2>
                                 <TextField disabled id="textfield-plate" label={this.state.plate} onChange={this.handlePlate} />
 
                                 <br></br>
@@ -185,6 +186,7 @@ class UpdateCar extends Component {
                                         <CircularProgress />
                                 }
                             </FormControl>
+                            
                         </div>
                     </Fade>
                 </Modal>

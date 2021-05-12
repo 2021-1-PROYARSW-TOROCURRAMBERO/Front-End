@@ -9,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Car from "../CarImage"
 import axios from 'axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -28,12 +29,12 @@ class CarListModal extends Component {
         }
     }
 
-    componentDidMount= async () => {
+    componentDidMount = async () => {
         // sacar info usuario localestorage
         var userLocalestorage = await JSON.parse(localStorage.getItem('user'));
         this.setState({ userInfo: userLocalestorage })
         // sacar listas de carros
-        await axios.get(`https://quickmobility-backend.herokuapp.com/quickmobility/getCarros/` + userLocalestorage.username,
+        await axios.get(`https://quickmobility-backend.herokuapp.com/quickmobility/cars/` + userLocalestorage.username,
             {
                 headers: {
                     Authorization: userLocalestorage.token //the token is a variable which holds the token
@@ -60,14 +61,14 @@ class CarListModal extends Component {
     }
 
     selectIdColor = (c) => {
-        if (c === 'Blanco') return "#AAAAAA";
-        else if (c === 'Negro') return "#000000";
-        else if (c === 'Azul') return "#0032FF";
-        else if (c === 'Rojo') return "#FF0000";
-        else if (c === 'Amarillo') return "#FFFF00";
-        else if (c === 'Verde') return "#008000";
-        else if (c === 'Naranja') return "#FF4500";
-        else if (c === 'Morado') return "#800080";
+        if (c === 'blanco') return "#AAAAAA";
+        else if (c === 'negro') return "#000000";
+        else if (c === 'azul') return "#0032FF";
+        else if (c === 'rojo') return "#FF0000";
+        else if (c === 'amarillo') return "#FFFF00";
+        else if (c === 'verde') return "#008000";
+        else if (c === 'naranja') return "#FF4500";
+        else if (c === 'morado') return "#800080";
     }
 
     editData = async (n) => {
@@ -84,10 +85,14 @@ class CarListModal extends Component {
         const { classes } = this.props;
         return (
             <Grid container className={classes.gridContainer} spacing={2}>
-
+                <Box m="auto">
+                    <Typography color='initial' variant="h2">
+                        <strong>Mis Carros:</strong>
+                    </Typography>
+                </Box>
                 <Grid item xs={12}>
                     {this.state.cargarListaCarros ?
-
+                        <Box m="auto">
                         <Grid container justify="center" spacing={2}>
                             {this.state.listaDeCarros.map((carro, index) => {
                                 return (
@@ -97,7 +102,7 @@ class CarListModal extends Component {
                                             <CardHeader
                                                 title={
                                                     <Typography gutterBottom variant="h5" component="h2">
-                                                        Placa: {carro.placa}
+                                                        <strong>Placa:</strong> {carro.placa}
                                                     </Typography>
                                                 }
                                             />
@@ -107,11 +112,11 @@ class CarListModal extends Component {
                                                 <Car color={this.selectIdColor(carro.color)} />
 
                                                 <Typography gutterBottom variant="h5" component="h2">
-                                                    Marca: {carro.marca}
+                                                <strong>Marca:</strong> {carro.marca}
                                                     <br />
-                                                Modelo: {carro.modelo}
+                                                <strong>Modelo:</strong> {carro.modelo}
                                                     <br />
-                                                Color: {carro.color}
+                                                <strong>Color:</strong> {carro.color}
                                                 </Typography>
 
                                             </CardContent>
@@ -129,6 +134,7 @@ class CarListModal extends Component {
                             })}
                             {this.state.edit ? <UpdateCar car={this.state.listaDeCarros[this.state.selectedCar]} updateListCar={this.componentDidMount} /> : null}
                         </Grid>
+                        </Box>
                         :
                         <CircularProgress />
                     }
@@ -143,9 +149,8 @@ class CarListModal extends Component {
 const styles = theme => ({
     root: {
         width: 300,
-        height: 350,
         marginBottom: "50px",
-        backgroundColor: "#FF5733"
+        backgroundColor: "#8A33FF"
     },
     botonSolc: {
         justifyContent: "center",

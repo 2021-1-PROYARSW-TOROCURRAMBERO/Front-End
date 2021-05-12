@@ -1,18 +1,20 @@
 import React from 'react';
-import './OfferTrip.css';
 import {
     withStyles,
     TextField,
     MenuItem,
     Button,
-    Grid,
     CircularProgress,
+    Box,
+    Typography
 } from '@material-ui/core';
 
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
 import SockJsClient from 'react-stomp';
+
+import MapSelectPlace from './MapSelectPlace';
 
 const styles = theme => ({
     paper: {
@@ -30,7 +32,7 @@ const styles = theme => ({
         height: 25,
     },
 });
-
+// eslint-disable-next-line
 const zones = [
     { id: "1", name: "1 Salidas Norte de Bogotá" },
     { id: "2", name: "2 Suba Occidental" },
@@ -54,53 +56,24 @@ class OfferTrip extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { clientConnected: false, messages: "", from: '', to: '', price: 0, loadUniversities: false, universities: [], cars: [], currentCar: "", userInfo: "", route: "" };
+        this.state = {
+            lugar: { lat: "4.782775", lng: "-74.041645" },
+            onPressSend:false,
+            clientConnected: false, messages: "", from: '', fromAll: '', districtFrom: '', to: '', toAll: '', districtTo: '', price: 0, universities: [], cars: [], currentCar: "", userInfo: "", route: ""
+        };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    // HACK delete styles
-    componentWillUnmount() {
-        document.body.classList.remove("OfrecerViaje");
-    }
     async componentDidMount() {
         // sacar info usuario localestorage
         var userLocalestorage = await JSON.parse(localStorage.getItem('user'));
         this.setState({ userInfo: userLocalestorage });
-        console.log("user :", userLocalestorage);
-
-        // sacar listas de universities
-        await axios.get(`https://quickmobility-backend.herokuapp.com/quickmobility/getUniversidades`,
-            {
-                headers: {
-                    Authorization: userLocalestorage.token //the token is a variable which holds the token
-                }
-            }
-        )
-            .then(res => {
-                const universities = res.data;
-                this.setState({ universities });
-                this.setState({ loadUniversities: true });
-            })
-            .catch(async function () {
-                // aqui entra cuando el token es erroneo, toca pedirle que vuelva a loguearse
-                await Swal.fire(
-                    'Sesion Finalizada',
-                    'Vuelva a loguearse',
-                    'error'
-                )
-                //clear local estorage
-                localStorage.clear();
-                // redireccionar a login
-                window.location.replace("/login")
-            });
-
 
         // sacar listas de cars
         var user = this.state.userInfo;
-        console.log(user);
         if (user !== "") {
             const username = user.username;
-            await axios.get(`https://quickmobility-backend.herokuapp.com/quickmobility/getCarros/` + username,
+            await axios.get(`https://quickmobility-backend.herokuapp.com/quickmobility/cars/` + username,
                 {
                     headers: {
                         Authorization: userLocalestorage.token //the token is a variable which holds the token
@@ -111,7 +84,19 @@ class OfferTrip extends React.Component {
                     const cars = res.data;
                     this.setState({ cars: cars });
                     if (cars.length === 0) {
-                        alert("Debes registrar un carro para iniciar un viaje");
+                        Swal.fire({
+                            title: 'Debes registrar un carro para iniciar un viaje',
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: `ok`,
+                          }).then((result) => {
+                            /* Read more about isConfirmed, isDenied below */
+                            if (result.isConfirmed) {
+                                window.location.reload()
+                            } else if (result.isDismissed) {
+                                window.location.reload()
+                            }
+                          })
                     }
 
                 })
@@ -127,9 +112,7 @@ class OfferTrip extends React.Component {
                     // redireccionar a login
                     window.location.replace("/login")
                 });
-
         }
-
     }
 
     handleAll = (e) => {
@@ -152,26 +135,29 @@ class OfferTrip extends React.Component {
     };
 
     handleOfferTrip(response) {
-        console.log("response " + response);
         this.setState({ messages: response });
     }
 
     componentDidUpdate() {
         // Uso tipico (no olvides de comparar las props):
         if (this.state.messages !== "") {
-
-            if (this.state.messages === "The driver selected is not available") {
-                Swal.fire(
-                    'Error',
-                    'Usted ya tiene un viaje en proceso',
-                    'warning'
-                )
-            } else {
-                Swal.fire(
-                    'Viaje Registrado!',
-                    'ahora podra esperar a sus pasajeros',
-                    'success'
-                )
+            if(this.state.onPressSend){
+                this.setState({onPressSend:false})
+                if (this.state.messages === "The driver selected is not available") {
+                    this.setState({ messages: "" })
+                    Swal.fire(
+                        'Error',
+                        'Usted ya tiene un viaje en proceso',
+                        'warning'
+                    )
+                } else {
+                    this.setState({ messages: "" })
+                    Swal.fire(
+                        'Viaje Registrado!',
+                        'ahora podra esperar a sus pasajeros',
+                        'success'
+                    )
+                }
             }
         }
     }
@@ -181,9 +167,9 @@ class OfferTrip extends React.Component {
         var userLocalestorage = JSON.parse(localStorage.getItem('user'));
         if (this.state.to !== "" && this.state.from !== "" && this.state.price !== ""
             && this.state.userInfo !== "" && this.state.currentCar !== "" && this.state.route !== "") {
-            console.log("username" + userLocalestorage.username);
             try {
-                this.clientRef.sendMessage(`/wss/offerTravel.${userLocalestorage.username}`, JSON.stringify({ ruta: this.state.route, precio: this.state.price, origen: ["4.761791", "-74.045695", "calle 127"], destino: ["4.761790", "-74.045695", "calle 100"], carro: this.state.currentCar }));
+                this.setState({onPressSend:true})
+                this.clientRef.sendMessage(`/wss/offerTravel.${userLocalestorage.username}`, JSON.stringify({ ruta: this.state.route, precio: this.state.price, origen: [this.state.fromAll.lat, this.state.fromAll.lng, this.state.from, this.state.districtFrom], destino: [this.state.toAll.lat, this.state.toAll.lng, this.state.to, this.state.districtTo], carro: this.state.currentCar }));
             } catch (error) {
                 Swal.fire(
                     'Error al registrar',
@@ -202,10 +188,22 @@ class OfferTrip extends React.Component {
 
     }
 
+    receiveInfoTo = (to, latLng) => {
+        this.setState({ to: to.label.replace(to.postalCode, "") })
+        this.setState({ toAll: latLng })
+        this.setState({ districtTo: to.district })
+    }
+
+    receiveInfoFrom = (from, latLng) => {
+        this.setState({ from: from.label.replace(from.postalCode, "") })
+        this.setState({ fromAll: latLng })
+        this.setState({ districtFrom: from.district })
+    }
+
     render() {
-        document.body.classList.add('OfrecerViaje');
         return (
-            <Grid container>
+
+            <React.Fragment>
                 <SockJsClient
                     url='https://quickmobility-backend.herokuapp.com/wss'
                     topics={['/quickmobility/drivers']}
@@ -215,44 +213,48 @@ class OfferTrip extends React.Component {
                     ref={(client) => { this.clientRef = client }}
                     debug={true}
                 />
-                {this.state.clientConnected && console.log("connect: ", this.state.clientConnected)}
 
-                <Grid item xs={12} sm={6} id="zonamapa">
-                    <iframe id="mapazona" title="zones" src="https://www.google.com/maps/d/embed?mid=1OvtjtTy8wBHAMww-SdVn06YgIlup4Ciu" width="640" height="480"></iframe>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <form onSubmit={this.handleSubmit} >
+                <Box m="auto">
+                    <Typography color='initial' variant="h2">
+                        <strong>Arrastre y escoja su inicio y destino en el mapa:</strong>
+                    </Typography>
+                    <Typography variant="h5">
+                        <strong>inicio:</strong> {this.state.from}
+                    </Typography>
+                    <Typography variant="h5">
+                        <strong>destino:</strong> {this.state.to}
+                    </Typography>
+                </Box>
+                <Box m="auto">
+                    <MapSelectPlace lugar={this.state.lugar} receiveInfoTo={this.receiveInfoTo} receiveInfoFrom={this.receiveInfoFrom} />
+                </Box>
+                <Box m="auto">
+                    <form onSubmit={this.handleSubmit}>
                         <br></br>
                         <h2>Mi viaje</h2>
                         <br></br>
-                        <div className="text OfrecerViaje">
-                            <div className="text-form-cond OfrecerViaje">
+                        <div>
+                            <div>
                                 <TextField name="route" value={this.state.route} variant="outlined" id="Ruta" label="Nombre de la ruta" type="text"
                                     onChange={this.handleAll} fullWidth autoFocus required />
                             </div>
                             <br></br>
-                            {
-                                this.state.loadUniversities ?
 
-                                    <div className="text-form-cond OfrecerViaje">
-                                        <TextField name="from" value={this.state.from} id="select" label="¿En que universidad estás?" select required fullWidth
-                                            onChange={this.handleAll}>
-                                            {this.state.universities.map((universidad, index) => (<MenuItem key={index} value={universidad.nombre}>{universidad.nombre}</MenuItem>))}
-                                        </TextField>
-                                    </div>
 
-                                    :
+                            <div>
+                                <TextField disabled={true} name="from" value={this.state.from} variant="outlined" id="From" label="Inicio" type="text"
+                                    onChange={this.handleAll} fullWidth autoFocus required />
+                            </div>
 
-                                    <CircularProgress />
-                            }
+
 
                             <br></br>
 
                             {
                                 this.state.cars.length > 0 ?
 
-                                    <div className="text-form-cond OfrecerViaje">
-                                        <TextField name="currentCar" value={this.state.currentCar} id="select" label="¿Qué carro vas a usar?" select required fullWidth
+                                    <div>
+                                        <TextField variant="outlined" name="currentCar" value={this.state.currentCar} id="car" label="¿Qué carro vas a usar?" select required fullWidth
                                             onChange={this.handleAll}>
                                             {this.state.cars.map((car, index) => (<MenuItem key={index} value={car.marca + " " + car.modelo}>{car.marca + " " + car.modelo}</MenuItem>))}
                                         </TextField>
@@ -266,15 +268,15 @@ class OfferTrip extends React.Component {
 
 
                             <br></br>
-                            <div className="text-form-cond OfrecerViaje">
-                                <TextField name="to" value={this.state.value} id="otlined-select" label="¿Para donde vás?" select required fullWidth
-                                    onChange={this.handleAll}>
-                                    {zones.map((zona) => (<MenuItem value={zona.id}>{zona.name}</MenuItem>))}
-                                </TextField>
+                            <div>
+                                <div>
+                                    <TextField disabled={true} name="to" value={this.state.to} variant="outlined" id="to" label="Destino" type="text"
+                                        onChange={this.handleAll} fullWidth autoFocus required />
+                                </div>
                             </div>
                             <br></br>
                             <br></br>
-                            <div className="text-form-cond">
+                            <div>
                                 <TextField name="price" value={this.state.price} id="outlined-number" label="Precio" type="number" InputLabelProps={{ shrink: true, }}
                                     variant="outlined" onChange={this.handleAll} fullWidth autoFocus
                                     required />
@@ -282,16 +284,17 @@ class OfferTrip extends React.Component {
                             <br></br>
                         </div>
                         <div>
-                            <Button onClick={this.send} color="primary" variant="contained" className="submit">
+                            <Button onClick={this.send} color="primary" variant="contained">
                                 Iniciar
                             </Button>
                         </div>
                         <br></br>
                         <br></br>
                     </form>
-                </Grid>
+                </Box>
 
-            </Grid>
+            </React.Fragment>
+
         );
     }
 }

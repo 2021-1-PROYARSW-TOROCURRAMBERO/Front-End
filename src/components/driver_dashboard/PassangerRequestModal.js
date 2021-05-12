@@ -9,9 +9,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import './ModalSolicitudesPasajeros.css';
+import './PassangerRequestModal.css';
+import SockJsClient from 'react-stomp';
+import Swal from 'sweetalert2';
 
-class ModalSolicitudesPasajeros extends Component{
+class PassangerRequestModal extends Component{
 
     render(){
       return(<SimpleTable/>)
@@ -23,35 +25,70 @@ class RowPas extends Component {
     constructor(props){
         super(props);
         this.state = {
-           estadoBoton: 'aceptar',row:props.crow
+           stateBoton: 'acept',row:props.crow,messages: ""
         }
         this.key=props.keys;
     }
 
     changeEstado(e){
       var row = {...this.state.row};
-      if(this.state.estadoBoton==='aceptar'){
-        row.estado='En espera por recoger';
+      if(this.state.stateBoton==='acept'){
+        row.estado='waiting to be picked up';
         this.setState({row});
-        this.setState({estadoBoton:'se recogio'});
-      }else if(this.state.estadoBoton==='se recogio'){
-        row.estado='En el auto';
+        this.setState({stateBoton:'picked up'});
+        this.sendTrue();
+      }else if(this.state.stateBoton==='picked up'){
+        row.estado='In the car';
         this.setState({row});
-        this.setState({estadoBoton:'pasajero'});
+        this.setState({stateBoton:'passanger'});
       }
     }
     cancel(e){
       var row = {...this.state.row};
-      row.estado='En espera por conductor';
+      row.estado='searching driver';
       this.setState({row});
-      this.setState({estadoBoton:'aceptar'});
+      this.setState({stateBoton:'acept'});
+      this.sendFalse();
+    }
+
+    sendTrue = () => {
+        var userLocalestorage = JSON.parse(localStorage.getItem('user'));
+        try {
+            this.clientRef.sendMessage(`/wss/acceptOrRejectPassenger.${this.state.row.name}`, JSON.stringify({ usuario:userLocalestorage.username,estado: true}));
+        } catch (error) {
+            Swal.fire(
+                'Error al aceptar o rechazar el pasajero',
+                'Error socket, no hay conexion',
+                'error'
+            )
+            }
+    }
+
+    handleOfferTrip(response) {
+        this.setState({ messages: response });
+    }
+
+    sendFalse = () => {
+        var userLocalestorage = JSON.parse(localStorage.getItem('user'));
+        try {     
+            console.log(this.state.row.name);
+            console.log(userLocalestorage);
+            console.log(this.state.statePassanger);
+            this.clientRef.sendMessage(`/wss/acceptOrRejectPassenger.${this.state.row.name}`, JSON.stringify({ usuario:userLocalestorage.username,estado: false}));
+        } catch (error) {
+            Swal.fire(
+                'Error al aceptar o rechazar el pasajero',
+                'Error socket, no hay conexion',
+                'error'
+            )
+        }
     }
 
     render(){
         let btn_class='';
-        if(this.state.estadoBoton==='aceptar'){
+        if(this.state.stateBoton==='acept'){
           btn_class= 'buttonyellow';
-        }else if(this.state.estadoBoton==='se recogio'){
+        }else if(this.state.stateBoton==='picked up'){
           btn_class='buttongreen';
         }else{
           btn_class='buttonblack';
@@ -59,7 +96,15 @@ class RowPas extends Component {
         let row=this.state.row;
         return (
           <TableRow key={row.name}>
-
+            <SockJsClient
+                url='https://quickmobility-backend.herokuapp.com/wss'
+                topics={['/quickmobility/acceptOrRejectPassenger']}
+                onConnect={console.log("Connection established!")}
+                onDisconnect={console.log("Disconnected!")}
+                onMessage={(response) => this.handleOfferTrip(response)}
+                ref={(client) => { this.clientRef = client }}
+                debug={true}
+            />
             <TableCell component="th" scope="row">
               {row.name}
             </TableCell>
@@ -68,13 +113,13 @@ class RowPas extends Component {
             <TableCell align="right">
                   <Button className={btn_class}
                    onClick={this.changeEstado.bind(this)} variant="outlined" color="primary">
-                    {this.state.estadoBoton}
+                    {this.state.stateBoton}
                   </Button>
-                   {this.state.estadoBoton==='se recogio' ?       <Button className="cancelbutton marginbuttonleft"
+                   {this.state.stateBoton==='picked up' ?       <Button className="cancelbutton marginbuttonleft"
                          onClick={this.cancel.bind(this)} variant="outlined" color="primary">
                             Cancelar
                         </Button>  : null}
-                    {this.state.estadoBoton==='pasajero' ?        <Button className="buttongreen marginbuttonleft"
+                    {this.state.stateBoton==='passanger' ?        <Button className="buttongreen marginbuttonleft"
                         onClick={this.cancel.bind(this)} variant="outlined" color="primary">
                            Llegó
                        </Button> : null}
@@ -96,9 +141,9 @@ function createData(name, estado, lugar) {
 }
 
 const rows = [
-  createData('Juan','En espera por conductor','Toberin Cll 151 #20-17'),
-  createData('Victor','En espera por conductor','Cedritos Cll 134 #15-48'),
-  createData('Mario','En espera por conductor','Mazuren Cll 134 #40-5'),
+  createData('Juan','searching driver','Toberin Cll 151 #20-17'),
+  createData('Victor','searching driver','Cedritos Cll 134 #15-48'),
+  createData('Mario','searching driver','Mazuren Cll 134 #40-5'),
 ];
 
 const SimpleTable=((props)=> {
@@ -108,12 +153,12 @@ const SimpleTable=((props)=> {
   return (
     <TableContainer component={Paper}>
           <Typography variant="h3" id="tableTitle" component="div">
-            Solicitudes de Pasajeros
+            Solicitudes de pasajeros
           </Typography>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Pasajero</TableCell>
+            <TableCell>passanger</TableCell>
             <TableCell align="right">Estado</TableCell>
             <TableCell align="right">Lugar</TableCell>
             <TableCell align="right">Acciones</TableCell>
@@ -128,4 +173,4 @@ const SimpleTable=((props)=> {
     </TableContainer>
   );
 })
-export default ModalSolicitudesPasajeros;
+export default PassangerRequestModal;
