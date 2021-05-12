@@ -104,8 +104,8 @@ class RegisterUser extends Component {
           console.log(response.data);
           if (response.status === 200) {
             await Swal.fire(
-              'Cuenta creada satisfactoriamente!',
-              'Sera redireccionado a la pagina de inicio de sesion',
+              '¡Cuenta creada satisfactoriamente!',
+              'Será redireccionado a la página de inicio de sesión',
               'success'
             )
 
