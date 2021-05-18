@@ -33,7 +33,7 @@ class RegisterUser extends Component {
                 <TextField id="email" name="email" label="Correo" required value={this.state.email} onChange={this.handleAll} autoComplete="email" autoFocus />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
-                <TextField id="university" name="university" label="Universidad" value={this.state.university} required onChange={this.handleAll} autoComplete="university" autoFocus />
+                <TextField id="university" name="university" label="Barrio" value={this.state.university} required onChange={this.handleAll} autoComplete="university" autoFocus />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
                 <TextField name="address" id="address" required label="Dirección" value={this.state.address} onChange={this.handleAll} autoComplete="current-password" />
